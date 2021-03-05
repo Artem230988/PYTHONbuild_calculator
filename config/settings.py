@@ -25,10 +25,12 @@ INSTALLED_APPS = [
     'calculator',
     # install apps
     'rest_framework',
+    'rest_framework.authtoken',
     'django_filters',
     'django_extensions',
     'corsheaders',
     'drf_yasg',
+    'djoser',
 ]
 
 MIDDLEWARE = [
@@ -118,6 +120,7 @@ AUTH_USER_MODEL = 'profiles.User'
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
     ],
 }
 
