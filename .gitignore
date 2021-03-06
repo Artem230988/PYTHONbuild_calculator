@@ -133,3 +133,5 @@ dmypy.json
 /media/
 /sent_emails/
 /calculator/garbage.txt
+/calculator/migrations/
+/profiles/migrations/
