@@ -35,6 +35,10 @@ class MaterialsAdmin(admin.ModelAdmin):
     empty_value_display = '-пусто-'
 
 
+class MeasurementUnitAdmin(admin.ModelAdmin):
+    list_display = ('measurement_unit',)
+
+
 class MaterialsTypeAdmin(admin.ModelAdmin):
     list_display = ('name', 'measurement_unit', 'materials_parameters',)
     search_fields = ('name',)
@@ -60,6 +64,7 @@ admin.site.register(Calculation, CalculationAdmin)
 admin.site.register(CalculationState, CalculationStateAdmin)
 admin.site.register(Results, ResultsAdmin)
 admin.site.register(Materials, MaterialsAdmin)
+admin.site.register(MeasurementUnit, MeasurementUnitAdmin)
 admin.site.register(MaterialsType, MaterialsTypeAdmin)
 admin.site.register(MaterialsParameter, MaterialsParameterAdmin)
 admin.site.register(PriceList, PriceListAdmin)

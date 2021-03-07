@@ -5,8 +5,13 @@ from . import views
 
 
 router1 = SimpleRouter()
-router1.register(r'customers', views.CustomersViewSet, basename='customers')
+router1.register(r'customers',
+                 views.CustomersViewSet,
+                 basename='customers')
+router1.register(r'customers/(?P<customers_id>\d+)/calculation',
+                 views.CalculationViewSet,
+                 basename='calculation')
 
 urlpatterns = [
-    path('v1/', include(router1.urls)),
+    path('', include(router1.urls)),
 ]

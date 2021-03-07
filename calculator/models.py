@@ -37,7 +37,7 @@ class Customers(models.Model):
         User,
         verbose_name='Менеджер',
         on_delete=models.PROTECT,
-        related_name='customers'
+        related_name='customers',
     )
 
     class Meta:
@@ -45,7 +45,7 @@ class Customers(models.Model):
         verbose_name_plural = 'Заказчики'
 
     def __str__(self):
-        name = self.last_name + self.first_name
+        name = self.last_name + ' ' + self.first_name
         return name
 
 
@@ -54,12 +54,15 @@ class Calculation(models.Model):
     manager = models.ForeignKey(
         User,
         verbose_name='Менеджер',
-        on_delete=models.PROTECT
+        on_delete=models.PROTECT,
+        related_name='calculation',
     )
     customer = models.ForeignKey(
         Customers,
         verbose_name='Заказчик',
-        on_delete=models.PROTECT)
+        on_delete=models.PROTECT,
+        related_name='calculation',
+    )
     adress_object_construction = models.CharField(
         'Адрес строительства',
         max_length=1000,
@@ -73,20 +76,19 @@ class Calculation(models.Model):
         'Дата создания',
         auto_now_add=True
     )
-    result_id = models.ForeignKey(
-        'Results',
-        verbose_name='Результаты',
-        on_delete=models.PROTECT
-    )
     state_calculation = models.ForeignKey(
         'CalculationState',
         verbose_name='Статус расчета',
-        on_delete=models.PROTECT
+        on_delete=models.PROTECT,
+        related_name='calculation',
     )
 
     class Meta:
         verbose_name = 'Расчет'
         verbose_name_plural = 'Расчеты'
+
+    def __str__(self):
+        return self.title
 
 
 class CalculationState(models.Model):
@@ -106,16 +108,24 @@ class CalculationState(models.Model):
 
 class Results(models.Model):
     """Результаты."""
+    calculation = models.ForeignKey(
+        Calculation,
+        verbose_name='Расчет',
+        on_delete=models.PROTECT,
+        related_name='results',
+    )
     material = models.ForeignKey(
         'Materials',
         verbose_name='Материал',
-        on_delete=models.PROTECT
+        on_delete=models.PROTECT,
+        related_name = 'results',
     )
     amount = models.PositiveIntegerField('Количество')
     price = models.ForeignKey(
         'PriceList',
         verbose_name='Прайс лист',
-        on_delete=models.PROTECT
+        on_delete=models.PROTECT,
+        related_name='results',
     )
 
     @property
@@ -137,7 +147,8 @@ class Materials(models.Model):
     materials_type = models.ForeignKey(
         'MaterialsType',
         verbose_name='Тип материала',
-        on_delete=models.PROTECT
+        on_delete=models.PROTECT,
+        related_name='materials',
     )
 
     class Meta:
@@ -157,12 +168,14 @@ class MaterialsType(models.Model):
     measurement_unit = models.ForeignKey(
         'MeasurementUnit',
         verbose_name='Единица измерения',
-        on_delete=models.PROTECT
+        on_delete=models.PROTECT,
+        related_name='materials_type',
     )
     materials_parameters = models.ForeignKey(
         'MaterialsParameter',
         verbose_name='Параметры Материала',
-        on_delete=models.PROTECT
+        on_delete=models.PROTECT,
+        related_name='materials_type',
     )
 
     class Meta:
@@ -187,26 +200,38 @@ class MeasurementUnit(models.Model):
 
 class MaterialsParameter(models.Model):
     """Параметры материала."""
-    lenght = models.DecimalField(verbose_name='Длина',
-                                 decimal_places=2,
-                                 max_digits=10,
-                                 default=0)
-    wedth = models.DecimalField(verbose_name='Ширина',
-                                decimal_places=2,
-                                max_digits=10,
-                                default=0)
-    thickness = models.DecimalField(verbose_name='Толщина',
-                                    decimal_places=2,
-                                    max_digits=10,
-                                    default=0)
-    volume = models.DecimalField(verbose_name='Объем',
-                                 decimal_places=2,
-                                 max_digits=10,
-                                 default=0)
+    lenght = models.DecimalField(
+        verbose_name='Длина',
+        decimal_places=2,
+        max_digits=10,
+        default=0
+    )
+    wedth = models.DecimalField(
+        verbose_name='Ширина',
+        decimal_places=2,
+        max_digits=10,
+        default=0
+    )
+    thickness = models.DecimalField(
+        verbose_name='Толщина',
+        decimal_places=2,
+        max_digits=10,
+        default=0
+    )
+    volume = models.DecimalField(
+        verbose_name='Объем',
+        decimal_places=2,
+        max_digits=10,
+        default=0
+    )
 
     class Meta:
         verbose_name = 'Параметры материала'
         verbose_name_plural = 'Параметры материала'
+
+    def __str__(self):
+        return (str(self.lenght) + ' ' + str(self.wedth) + ' ' +
+                str(self.thickness) + ' ' + str(self.volume))
 
 
 class PriceList(models.Model):
@@ -214,7 +239,8 @@ class PriceList(models.Model):
     material = models.ForeignKey(
         'Materials',
         verbose_name='Материал',
-        on_delete=models.PROTECT
+        on_delete=models.PROTECT,
+        related_name='price_list',
     )
     data = models.DateField(
         verbose_name='Дата',
@@ -235,13 +261,17 @@ class PriceList(models.Model):
         verbose_name = 'Прайс лист'
         verbose_name_plural = 'Прайс листы'
 
+    def __str__(self):
+        return self.material.name
+
 
 class StructuralElementFrame(models.Model):
     """Конструктивный элемент каркас."""
     calculations = models.ForeignKey(
         'Calculation',
         verbose_name='Расчет',
-        on_delete=models.PROTECT
+        on_delete=models.PROTECT,
+        related_name='structural_element_frame',
     )
     perimeter_of_external_walls = models.DecimalField(
         verbose_name='Периметр внешних стен',
@@ -321,5 +351,5 @@ class StructuralElementFrame(models.Model):
     )
 
     class Meta:
-        verbose_name = 'Конструктивный элемент каркас.'
-        verbose_name_plural = 'Конструктивный элемент каркас.'
+        verbose_name = 'Конструктивный элемент каркас'
+        verbose_name_plural = 'Конструктивный элемент каркас'

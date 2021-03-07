@@ -6,8 +6,8 @@ from .yasg import urlpatterns as doc_urls
 urlpatterns = [
     path('admin/', admin.site.urls),
 
-    path('api/', include('calculator.urls')),
-    path('api/', include('profiles.urls')),
+    path('api/v1/', include('calculator.urls')),
+    path('api/v1/', include('profiles.urls')),
 
 ]
 
