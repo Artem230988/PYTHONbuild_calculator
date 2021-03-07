@@ -1,0 +1,41 @@
+---
+
+include:
+    - project: 'cicd2021/project5'
+      ref: master
+      file: 'actions.yaml'
+
+stages:
+    - lint
+    - test
+    - build
+    - deploy
+
+lint:
+    only:
+        - develop
+        - test
+        - master
+    extends: .lint_backend
+
+test:
+    only: 
+        - develop
+        - test
+        - master 
+    extends: .test_backend   
+
+build:
+    only:
+        - develop
+        - test
+        - master
+    extends: .build_backend
+
+deploy:
+    only:
+        - develop
+        - test
+        - master
+    extends: .deploy_backend
+    
