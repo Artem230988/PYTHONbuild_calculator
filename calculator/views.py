@@ -1,4 +1,5 @@
 from django.http import Http404
+from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, mixins
 from rest_framework.viewsets import GenericViewSet
 
@@ -23,8 +24,13 @@ class CalculationViewSet(viewsets.ModelViewSet):
     serializer_class = CalculationSerializer
 
     def get_queryset(self):
-        customers_id = self.kwargs['customers_id']
-        return Calculation.objects.filter(customer=customers_id)
+        customer_id = self.kwargs['customers_id']
+        return Calculation.objects.filter(customer=customer_id)
+
+    def perform_create(self, serializer, *args, **kwargs):
+        customer_id = self.kwargs['customers_id']
+        customer = get_object_or_404(Customers, id=customer_id)
+        serializer.save(customer=customer)
 
 
 class StructuralElementFrameViewSet(viewsets.ModelViewSet):
@@ -35,6 +41,11 @@ class StructuralElementFrameViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         calculation = self.kwargs['calculation_id']
         return StructuralElementFrame.objects.filter(calculations=calculation)
+
+    def perform_create(self, serializer, *args, **kwargs):
+        calculation_id = self.kwargs['calculation_id']
+        calculation = get_object_or_404(Calculation, id=calculation_id)
+        serializer.save(calculations=calculation)
 
 
 class OpeningsViewSet(mixins.CreateModelMixin,
@@ -60,14 +71,11 @@ class OpeningsViewSet(mixins.CreateModelMixin,
 
     def get_object(self):
         openings = self.kwargs['openings_id']
-        try:
-            return Openings.objects.get(pk=openings)
-        except Openings.DoesNotExist:
-            raise Http404
+        return get_object_or_404(Openings, pk=openings)
 
     def perform_create(self, serializer):
         frame = self.kwargs['frame_id']
-        frame = StructuralElementFrame.objects.get(pk=frame)
+        frame = get_object_or_404(StructuralElementFrame, pk=frame)
         opening = serializer.validated_data
         serializer.save()
         opening = Openings.objects.get(
