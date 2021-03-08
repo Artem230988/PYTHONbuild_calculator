@@ -1,6 +1,8 @@
 from decimal import Decimal
 from math import ceil
 
+from django.shortcuts import get_object_or_404
+
 from calculator.models import *
 
 
@@ -17,7 +19,7 @@ def calculate_frame(frame):
             frame.number_of_floors
     )
 
-    # Внешние стены
+    external_walls = 'Внешние стены'
     count_planks_external_walls = ceil(frame.perimeter_of_external_walls /
                                        frame.step_of_racks + 1)
     count_planks_floor = ceil(frame.perimeter_of_external_walls * 2 / 3)
@@ -47,7 +49,7 @@ def calculate_frame(frame):
     volume_insulation_external = (square_insulation_external_walls *
                                   thickness_insulation_external)
 
-    # Внутренние стены
+    internal_walls = 'Внутренние стены'
     count_planks_internal_walls = ceil(frame.internal_wall_length /
                                        frame.step_of_racks)
     count_planks_openings_internal = 0
@@ -65,7 +67,7 @@ def calculate_frame(frame):
                                    3 * Decimal('0.05'))
     square_osb_internal = square_internal_walls * 2 * Decimal('1.15')
 
-    # Перекрытия
+    base_area = 'Перекрытия'
     count_planks_base_area = ceil(frame.base_area * Decimal('0.7'))
     wigth_plank_base_area = frame.overlap_thickness / 1000
     volume_plank_base_area = (count_planks_base_area *
@@ -77,6 +79,20 @@ def calculate_frame(frame):
     thickness_insulation_base_area = frame.overlap_thickness / 1000
     volume_insulation_base_area = (square_insulation_base_area *
                                    thickness_insulation_base_area)
+
+    material = get_object_or_404(
+        Materials,
+        materials_type__materials_parameters__lenght=3000,
+        materials_type__materials_parameters__wedth=int(frame.external_wall_thickness),)
+    price_list = get_object_or_404(PriceList, material=material)
+    result_external_walls = Results.objects.create(
+        name=external_walls,
+        calculation=frame.calculations,
+        material=material,
+        amount=volume_plank_external_walls,
+        price=price_list
+    )
+    result_external_walls.save()
 
     print('\n', volume_plank_external_walls, '\n',
           square_osb_external, '\n',

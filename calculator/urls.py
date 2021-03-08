@@ -19,7 +19,7 @@ router1.register(r'customers/(?P<customers_id>\d+)/'
                  r'calculation/(?P<calculation_id>\d+)/'
                  r'frame/(?P<frame_id>\d+)/openings',
                  views.OpeningsViewSet,
-                 basename='frame')
+                 basename='openings')
 
 urlpatterns = [
     path('', include(router1.urls)),

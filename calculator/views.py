@@ -1,4 +1,3 @@
-from django.http import Http404
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, mixins
 from rest_framework.viewsets import GenericViewSet
@@ -63,11 +62,10 @@ class OpeningsViewSet(mixins.CreateModelMixin,
         queryset = FrameOpenings.objects.filter(
             structural_element_frame=frame,
         )
-        print(queryset)
         list_q = []
         for i in queryset:
             list_q.append(i.openings)
-        return queryset
+        return list_q
 
     def get_object(self):
         openings = self.kwargs['openings_id']
