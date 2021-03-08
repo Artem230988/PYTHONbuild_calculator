@@ -47,3 +47,10 @@ class OpeningsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Openings
         fields = '__all__'
+
+
+class MaterialsSerializer(serializers.ModelSerializer):
+    """Сериализатор для материалов"""
+    class Meta:
+        model = Materials
+        fields = '__all__'

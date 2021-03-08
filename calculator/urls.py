@@ -1,5 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import SimpleRouter
+from .views import *
 
 from . import views
 
@@ -23,4 +24,6 @@ router1.register(r'customers/(?P<customers_id>\d+)/'
 
 urlpatterns = [
     path('', include(router1.urls)),
+
+    path('materials/', MaterialsListView.as_view(), name='materials'),
 ]

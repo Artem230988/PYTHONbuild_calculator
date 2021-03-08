@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404
-from rest_framework import viewsets, mixins
+from rest_framework import viewsets, mixins, generics, permissions
 from rest_framework.viewsets import GenericViewSet
 
 from .calculate_frame import calculate_frame
@@ -87,3 +87,10 @@ class OpeningsViewSet(mixins.CreateModelMixin,
             openings=opening,
         )
         frame_openings.save()
+
+
+class MaterialsListView(generics.ListAPIView):
+    # http_method_names = ['get', ]
+    queryset = Materials.objects.all()
+    serializer_class = MaterialsSerializer
+    # permission_classes = [permissions.IsAuthenticated, ]
