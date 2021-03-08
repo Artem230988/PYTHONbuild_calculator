@@ -11,6 +11,15 @@ router1.register(r'customers',
 router1.register(r'customers/(?P<customers_id>\d+)/calculation',
                  views.CalculationViewSet,
                  basename='calculation')
+router1.register(r'customers/(?P<customers_id>\d+)/'
+                 r'calculation/(?P<calculation_id>\d+)/frame',
+                 views.StructuralElementFrameViewSet,
+                 basename='frame')
+router1.register(r'customers/(?P<customers_id>\d+)/'
+                 r'calculation/(?P<calculation_id>\d+)/'
+                 r'frame/(?P<frame_id>\d+)/openings',
+                 views.OpeningsViewSet,
+                 basename='frame')
 
 urlpatterns = [
     path('', include(router1.urls)),

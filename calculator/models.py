@@ -114,11 +114,16 @@ class Results(models.Model):
         on_delete=models.PROTECT,
         related_name='results',
     )
+    name = models.CharField(
+        max_length=50,
+        verbose_name='Часть здания',
+        default='qwerty'
+    )
     material = models.ForeignKey(
         'Materials',
         verbose_name='Материал',
         on_delete=models.PROTECT,
-        related_name = 'results',
+        related_name='results',
     )
     amount = models.PositiveIntegerField('Количество')
     price = models.ForeignKey(
@@ -273,6 +278,9 @@ class StructuralElementFrame(models.Model):
         on_delete=models.PROTECT,
         related_name='structural_element_frame',
     )
+    number_of_floors = models.IntegerField(
+        verbose_name='Количество этажей'
+    )
     perimeter_of_external_walls = models.DecimalField(
         verbose_name='Периметр внешних стен',
         decimal_places=2,
@@ -298,7 +306,6 @@ class StructuralElementFrame(models.Model):
         decimal_places=2,
         max_digits=10
     )
-    number_of_floors = models.IntegerField(verbose_name='Количество этажей')
     height_of_one_floor = models.DecimalField(
         verbose_name='Высота одного этажа',
         decimal_places=2,
@@ -353,3 +360,48 @@ class StructuralElementFrame(models.Model):
     class Meta:
         verbose_name = 'Конструктивный элемент каркас'
         verbose_name_plural = 'Конструктивный элемент каркас'
+
+
+class Openings(models.Model):
+    """Проемы."""
+    type = models.CharField(
+        max_length=50,
+        verbose_name='Тип проема'
+    )
+    wigth = models.DecimalField(
+        verbose_name='Ширина',
+        decimal_places=2,
+        max_digits=10
+    )
+    height = models.DecimalField(
+        verbose_name='Высота',
+        decimal_places=2,
+        max_digits=10
+    )
+    count = models.IntegerField(
+        verbose_name='Количество'
+    )
+
+    class Meta:
+        verbose_name = 'Проем'
+        verbose_name_plural = 'Проемы'
+
+
+class FrameOpenings(models.Model):
+    """Проемы к структурному элементу каркас."""
+    structural_element_frame = models.ForeignKey(
+        StructuralElementFrame,
+        verbose_name='Структурный элемент каркас',
+        on_delete=models.PROTECT,
+        related_name='frame_openings',
+    )
+    openings = models.ForeignKey(
+        Openings,
+        verbose_name='Проемы',
+        on_delete=models.PROTECT,
+        related_name='frame_openings',
+    )
+
+    class Meta:
+        verbose_name = 'Проем к структурному элементу каркас'
+        verbose_name_plural = 'Проемы к структурному элементу каркас'

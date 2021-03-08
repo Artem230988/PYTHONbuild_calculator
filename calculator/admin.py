@@ -54,8 +54,17 @@ class MaterialsParameterAdmin(admin.ModelAdmin):
 
 class PriceListAdmin(admin.ModelAdmin):
     list_display = ('material', 'data', 'purchase_price', 'selling_price')
-    ordering = ('purchase_price', 'selling_price')
     date_hierarchy = 'data'
+    empty_value_display = '-пусто-'
+
+
+class OpeningsAdmin(admin.ModelAdmin):
+    list_display = ('type', 'wigth', 'height', 'count')
+    empty_value_display = '-пусто-'
+
+
+class FrameOpeningsAdmin(admin.ModelAdmin):
+    list_display = ('structural_element_frame', 'openings',)
     empty_value_display = '-пусто-'
 
 
@@ -69,3 +78,5 @@ admin.site.register(MaterialsType, MaterialsTypeAdmin)
 admin.site.register(MaterialsParameter, MaterialsParameterAdmin)
 admin.site.register(PriceList, PriceListAdmin)
 admin.site.register(StructuralElementFrame)
+admin.site.register(Openings, OpeningsAdmin)
+admin.site.register(FrameOpenings, FrameOpeningsAdmin)
