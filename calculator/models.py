@@ -119,8 +119,8 @@ class Results(models.Model):
         verbose_name='Часть здания',
         default='qwerty'
     )
-    material = models.ForeignKey(
-        'Materials',
+    specific_material = models.ForeignKey(
+        'SpecificMaterial',
         verbose_name='Материал',
         on_delete=models.PROTECT,
         related_name='results',
@@ -149,12 +149,6 @@ class Materials(models.Model):
         max_length=50,
         verbose_name='Название'
     )
-    materials_type = models.ForeignKey(
-        'MaterialsType',
-        verbose_name='Тип материала',
-        on_delete=models.PROTECT,
-        related_name='materials',
-    )
 
     class Meta:
         verbose_name = 'Материал'
@@ -164,11 +158,11 @@ class Materials(models.Model):
         return self.name
 
 
-class MaterialsType(models.Model):
-    """Типы материалов."""
+class SpecificMaterial(models.Model):
+    """Характеристики материала."""
     name = models.CharField(
         max_length=50,
-        verbose_name='Название'
+        verbose_name='Название материала'
     )
     measurement_unit = models.ForeignKey(
         'MeasurementUnit',
@@ -176,16 +170,34 @@ class MaterialsType(models.Model):
         on_delete=models.PROTECT,
         related_name='materials_type',
     )
-    materials_parameters = models.ForeignKey(
-        'MaterialsParameter',
-        verbose_name='Параметры Материала',
-        on_delete=models.PROTECT,
-        related_name='materials_type',
+    length = models.DecimalField(
+        verbose_name='Длина',
+        decimal_places=2,
+        max_digits=10,
+        blank=True, null=True
+    )
+    width = models.DecimalField(
+        verbose_name='Ширина',
+        decimal_places=2,
+        max_digits=10,
+        blank=True, null=True
+    )
+    thickness = models.DecimalField(
+        verbose_name='Толщина',
+        decimal_places=2,
+        max_digits=10,
+        blank=True, null=True
+    )
+    volume = models.DecimalField(
+        verbose_name='Объем',
+        decimal_places=2,
+        max_digits=10,
+        blank=True, null=True
     )
 
     class Meta:
-        verbose_name = 'Тип материала'
-        verbose_name_plural = 'Типы материалов'
+        verbose_name = 'Характеристики материала'
+        verbose_name_plural = 'Характеристики материала'
 
     def __str__(self):
         return self.name
@@ -203,46 +215,10 @@ class MeasurementUnit(models.Model):
         return self.measurement_unit
 
 
-class MaterialsParameter(models.Model):
-    """Параметры материала."""
-    lenght = models.DecimalField(
-        verbose_name='Длина',
-        decimal_places=2,
-        max_digits=10,
-        default=0
-    )
-    wedth = models.DecimalField(
-        verbose_name='Ширина',
-        decimal_places=2,
-        max_digits=10,
-        default=0
-    )
-    thickness = models.DecimalField(
-        verbose_name='Толщина',
-        decimal_places=2,
-        max_digits=10,
-        default=0
-    )
-    volume = models.DecimalField(
-        verbose_name='Объем',
-        decimal_places=2,
-        max_digits=10,
-        default=0
-    )
-
-    class Meta:
-        verbose_name = 'Параметры материала'
-        verbose_name_plural = 'Параметры материала'
-
-    def __str__(self):
-        return (str(self.lenght) + ' ' + str(self.wedth) + ' ' +
-                str(self.thickness) + ' ' + str(self.volume))
-
-
 class PriceList(models.Model):
     """Прайс лист."""
-    material = models.ForeignKey(
-        'Materials',
+    specific_material = models.ForeignKey(
+        'SpecificMaterial',
         verbose_name='Материал',
         on_delete=models.PROTECT,
         related_name='price_list',
@@ -267,7 +243,7 @@ class PriceList(models.Model):
         verbose_name_plural = 'Прайс листы'
 
     def __str__(self):
-        return self.material.name
+        return self.specific_material.name
 
 
 class StructuralElementFrame(models.Model):

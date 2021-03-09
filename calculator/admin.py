@@ -24,13 +24,13 @@ class CalculationStateAdmin(admin.ModelAdmin):
 
 
 class ResultsAdmin(admin.ModelAdmin):
-    list_display = ('material', 'amount', 'price', 'full_price',)
-    list_filter = ('material', )
+    list_display = ('specific_material', 'amount', 'price', 'full_price',)
+    list_filter = ('specific_material', )
     empty_value_display = '-пусто-'
 
 
 class MaterialsAdmin(admin.ModelAdmin):
-    list_display = ('name', 'materials_type',)
+    list_display = ('name',)
     search_fields = ('name',)
     empty_value_display = '-пусто-'
 
@@ -39,21 +39,15 @@ class MeasurementUnitAdmin(admin.ModelAdmin):
     list_display = ('measurement_unit',)
 
 
-class MaterialsTypeAdmin(admin.ModelAdmin):
-    list_display = ('name', 'measurement_unit', 'materials_parameters',)
+class SpecificMaterialAdmin(admin.ModelAdmin):
+    list_display = ('name', 'measurement_unit',)
     search_fields = ('name',)
     list_filter = ('measurement_unit',)
     empty_value_display = '-пусто-'
 
 
-class MaterialsParameterAdmin(admin.ModelAdmin):
-    list_display = ('lenght', 'wedth', 'thickness', 'volume')
-    list_filter = ('lenght', 'wedth', 'thickness', 'volume')
-    empty_value_display = '-пусто-'
-
-
 class PriceListAdmin(admin.ModelAdmin):
-    list_display = ('material', 'data', 'purchase_price', 'selling_price')
+    list_display = ('specific_material', 'data', 'purchase_price', 'selling_price')
     date_hierarchy = 'data'
     empty_value_display = '-пусто-'
 
@@ -74,8 +68,7 @@ admin.site.register(CalculationState, CalculationStateAdmin)
 admin.site.register(Results, ResultsAdmin)
 admin.site.register(Materials, MaterialsAdmin)
 admin.site.register(MeasurementUnit, MeasurementUnitAdmin)
-admin.site.register(MaterialsType, MaterialsTypeAdmin)
-admin.site.register(MaterialsParameter, MaterialsParameterAdmin)
+admin.site.register(SpecificMaterial, SpecificMaterialAdmin)
 admin.site.register(PriceList, PriceListAdmin)
 admin.site.register(StructuralElementFrame)
 admin.site.register(Openings, OpeningsAdmin)

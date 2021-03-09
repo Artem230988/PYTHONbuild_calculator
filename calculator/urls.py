@@ -6,17 +6,19 @@ from . import views
 
 
 router1 = SimpleRouter()
+router2 = SimpleRouter()
+
 router1.register(r'customers',
                  views.CustomersViewSet,
                  basename='customers')
-router1.register(r'customers/(?P<customers_id>\d+)/calculation',
+router2.register(r'customers/(?P<customers_id>\d+)/calculation',
                  views.CalculationViewSet,
                  basename='calculation')
-router1.register(r'customers/(?P<customers_id>\d+)/'
+router2.register(r'customers/(?P<customers_id>\d+)/'
                  r'calculation/(?P<calculation_id>\d+)/frame',
                  views.StructuralElementFrameViewSet,
                  basename='frame')
-router1.register(r'customers/(?P<customers_id>\d+)/'
+router2.register(r'customers/(?P<customers_id>\d+)/'
                  r'calculation/(?P<calculation_id>\d+)/'
                  r'frame/(?P<frame_id>\d+)/openings',
                  views.OpeningsViewSet,
@@ -24,6 +26,7 @@ router1.register(r'customers/(?P<customers_id>\d+)/'
 
 urlpatterns = [
     path('', include(router1.urls)),
+    path('', include(router2.urls)),
 
     path('materials/', MaterialsListView.as_view(), name='materials'),
 ]
