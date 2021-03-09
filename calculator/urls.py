@@ -11,22 +11,23 @@ router2 = SimpleRouter()
 router1.register(r'customers',
                  views.CustomersViewSet,
                  basename='customers')
-router2.register(r'customers/(?P<customers_id>\d+)/calculation',
-                 views.CalculationViewSet,
-                 basename='calculation')
-router2.register(r'customers/(?P<customers_id>\d+)/'
-                 r'calculation/(?P<calculation_id>\d+)/frame',
-                 views.StructuralElementFrameViewSet,
-                 basename='frame')
-router2.register(r'customers/(?P<customers_id>\d+)/'
-                 r'calculation/(?P<calculation_id>\d+)/'
-                 r'frame/(?P<frame_id>\d+)/openings',
-                 views.OpeningsViewSet,
-                 basename='openings')
+# router2.register(r'customers/(?P<customers_id>\d+)/calculation',
+#                  views.CalculationViewSet,
+#                  basename='calculation')
+# router2.register(r'customers/(?P<customers_id>\d+)/'
+#                  r'calculation/(?P<calculation_id>\d+)/frame',
+#                  views.StructuralElementFrameViewSet,
+#                  basename='frame')
+# router2.register(r'customers/(?P<customers_id>\d+)/'
+#                  r'calculation/(?P<calculation_id>\d+)/'
+#                  r'frame/(?P<frame_id>\d+)/openings',
+#                  views.OpeningsViewSet,
+#                  basename='openings')
 
 urlpatterns = [
     path('', include(router1.urls)),
     path('', include(router2.urls)),
 
     path('materials/', MaterialsListView.as_view(), name='materials'),
+    path('customers/<int:pk>/calculation/', CalculationListView.as_view(), name='calculation'),
 ]
