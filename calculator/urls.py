@@ -29,5 +29,6 @@ urlpatterns = [
     path('', include(router2.urls)),
 
     path('materials/', MaterialsListView.as_view(), name='materials'),
-    path('customers/<int:pk>/calculation/', CalculationListView.as_view(), name='calculation'),
+    path('calculation/', CalculationListView.as_view(), name='calculation_list'),
+    path('calculation/<int:pk>', CalculationDetailView.as_view(), name='calculation_detail'),
 ]

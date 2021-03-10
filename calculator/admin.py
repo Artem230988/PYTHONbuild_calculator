@@ -23,13 +23,13 @@ class CalculationStateAdmin(admin.ModelAdmin):
     list_display = ('title',)
 
 
-class ResultsAdmin(admin.ModelAdmin):
+class ResultAdmin(admin.ModelAdmin):
     list_display = ('specific_material', 'amount', 'price', 'full_price',)
     list_filter = ('specific_material', )
     empty_value_display = '-пусто-'
 
 
-class MaterialsAdmin(admin.ModelAdmin):
+class MaterialAdmin(admin.ModelAdmin):
     list_display = ('name',)
     search_fields = ('name',)
     empty_value_display = '-пусто-'
@@ -52,12 +52,12 @@ class PriceListAdmin(admin.ModelAdmin):
     empty_value_display = '-пусто-'
 
 
-class OpeningsAdmin(admin.ModelAdmin):
+class OpeningAdmin(admin.ModelAdmin):
     list_display = ('type', 'wigth', 'height', 'count')
     empty_value_display = '-пусто-'
 
 
-class FrameOpeningsAdmin(admin.ModelAdmin):
+class FrameOpeningAdmin(admin.ModelAdmin):
     list_display = ('structural_element_frame', 'openings',)
     empty_value_display = '-пусто-'
 
@@ -65,11 +65,11 @@ class FrameOpeningsAdmin(admin.ModelAdmin):
 admin.site.register(Customers, CustomersAdmin)
 admin.site.register(Calculation, CalculationAdmin)
 admin.site.register(CalculationState, CalculationStateAdmin)
-admin.site.register(Results, ResultsAdmin)
-admin.site.register(Materials, MaterialsAdmin)
+admin.site.register(Result, ResultAdmin)
+admin.site.register(Material, MaterialAdmin)
 admin.site.register(MeasurementUnit, MeasurementUnitAdmin)
 admin.site.register(SpecificMaterial, SpecificMaterialAdmin)
 admin.site.register(PriceList, PriceListAdmin)
 admin.site.register(StructuralElementFrame)
-admin.site.register(Openings, OpeningsAdmin)
-admin.site.register(FrameOpenings, FrameOpeningsAdmin)
+admin.site.register(Opening, OpeningAdmin)
+admin.site.register(FrameOpening, FrameOpeningAdmin)
