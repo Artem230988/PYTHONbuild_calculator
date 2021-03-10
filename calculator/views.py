@@ -1,5 +1,6 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, mixins, generics, permissions
+from rest_framework.permissions import SAFE_METHODS
 from rest_framework.viewsets import GenericViewSet
 
 from .calculate_frame import calculate_frame
@@ -32,61 +33,68 @@ class CustomersViewSet(viewsets.ModelViewSet):
 #         serializer.save(customer=customer)
 #
 #
-# class StructuralElementFrameViewSet(viewsets.ModelViewSet):
-#     """CRUD для конструктивного элемента каркас."""
-#     http_method_names = ['get', 'post', 'patch', 'delete', 'head', 'options']
-#     serializer_class = StructuralElementFrameSerializer
+class StructuralElementFrameViewSet(mixins.CreateModelMixin,
+                                    mixins.ListModelMixin,
+                                    mixins.UpdateModelMixin,
+                                    mixins.DestroyModelMixin,
+                                    viewsets.GenericViewSet):
+    """CRUD для конструктивного элемента каркас."""
+    queryset = StructuralElementFrame.objects.all()
+    serializer_class = StructuralElementFrameSerializer
+    http_method_names = ['get', 'post', 'patch', 'delete', 'head', 'options']
+
+    def get_serializer_class(self):
+        if self.request.method in SAFE_METHODS:
+            return StructuralElementFrameSerializer
+        return StructuralElementFramePostSerializer
+
+    def perform_create(self, serializer):
+        serializer.save()
+        frame = StructuralElementFrame.objects.all()
+        calculate_frame(frame[len(frame)-1])
+
+    def perform_update(self, serializer):
+        frame = self.get_object()
+        serializer.save()
+        calculate_frame(frame)
+
+
+class OpeningsViewSet(mixins.CreateModelMixin, mixins.ListModelMixin,
+                      mixins.DestroyModelMixin, viewsets.GenericViewSet):
+    queryset = Openings.objects.all()
+    serializer_class = OpeningsSerializer
+
+
+#   def get_queryset(self):
+#       frame = self.kwargs['frame_id']
+#       queryset = FrameOpenings.objects.filter(
+#           structural_element_frame=frame,
+#       )
+#       list_q = []
+#       for i in queryset:
+#           list_q.append(i.openings)
+#       return list_q
 #
-#     def get_queryset(self):
-#         calculation = self.kwargs['calculation_id']
-#         return StructuralElementFrame.objects.filter(calculations=calculation)
+#   def get_object(self):
+#       openings = self.kwargs['openings_id']
+#       return get_object_or_404(Openings, pk=openings)
 #
-#     def perform_create(self, serializer, *args, **kwargs):
-#         calculation_id = self.kwargs['calculation_id']
-#         calculation = get_object_or_404(Calculation, id=calculation_id)
-#         serializer.save(calculations=calculation)
-#
-#
-# class OpeningsViewSet(mixins.CreateModelMixin,
-#                       mixins.UpdateModelMixin,
-#                       mixins.DestroyModelMixin,
-#                       mixins.ListModelMixin,
-#                       GenericViewSet):
-#     """CRUD для проемов."""
-#     http_method_names = ['get', 'post', 'patch', 'delete', 'head', 'options']
-#     serializer_class = OpeningsSerializer
-#     lookup_field = 'openings_id'
-#
-#     def get_queryset(self):
-#         frame = self.kwargs['frame_id']
-#         queryset = FrameOpenings.objects.filter(
-#             structural_element_frame=frame,
-#         )
-#         list_q = []
-#         for i in queryset:
-#             list_q.append(i.openings)
-#         return list_q
-#
-#     def get_object(self):
-#         openings = self.kwargs['openings_id']
-#         return get_object_or_404(Openings, pk=openings)
-#
-#     def perform_create(self, serializer):
-#         frame = self.kwargs['frame_id']
-#         frame = get_object_or_404(StructuralElementFrame, pk=frame)
-#         opening = serializer.validated_data
-#         serializer.save()
-#         opening = Openings.objects.get(
-#             type=opening['type'],
-#             wigth=opening['wigth'],
-#             height=opening['height'],
-#             count=opening['count'],
-#         )
-#         frame_openings = FrameOpenings.objects.create(
-#             structural_element_frame=frame,
-#             openings=opening,
-#         )
-#         frame_openings.save()
+#   def perform_create(self, serializer):
+#       frame = self.kwargs['frame_id']
+#       frame = get_object_or_404(StructuralElementFrame, pk=frame)
+#       opening = serializer.validated_data
+#       serializer.save()
+#       opening = Openings.objects.get(
+#           type=opening['type'],
+#           wigth=opening['wigth'],
+#           height=opening['height'],
+#           count=opening['count'],
+#       )
+#       frame_openings = FrameOpenings.objects.create(
+#           structural_element_frame=frame,
+#           openings=opening,
+#       )
+#       frame_openings.save()
 
 
 class MaterialsListView(generics.ListAPIView):

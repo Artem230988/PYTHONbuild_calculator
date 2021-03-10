@@ -23,11 +23,10 @@ def calculate_frame(frame):
     count_planks_external_walls = ceil(frame.perimeter_of_external_walls /
                                        frame.step_of_racks + 1)
     count_planks_floor = ceil(frame.perimeter_of_external_walls * 2 / 3)
-    openings = FrameOpenings.objects.filter(structural_element_frame=frame)
+    openings_all = frame.openings.all()
     count_planks_openings_external = 0
     square_openings = 0
-    for opening in openings:
-        opening = opening.openings
+    for opening in openings_all:
         if opening.type != 'Дверные проемы внутренние':
             count_planks_openings_external += (
                     (opening.wigth + opening.height) * 2 *
@@ -41,7 +40,8 @@ def calculate_frame(frame):
                                    wigth_plank_external_walls *
                                    3 * Decimal('0.05'))
     square_osb_external = square_external_walls * 2 * Decimal('1.15')
-    square_steam_waterproofing_external = square_external_walls * Decimal('1.15')
+    square_steam_waterproofing_external = square_external_walls * Decimal(
+        '1.15')
     square_windscreen_external = square_steam_waterproofing_external
     square_insulation_external_walls = (square_external_walls *
                                         Decimal('1.1') - square_openings)
@@ -53,8 +53,7 @@ def calculate_frame(frame):
     count_planks_internal_walls = ceil(frame.internal_wall_length /
                                        frame.step_of_racks)
     count_planks_openings_internal = 0
-    for opening in openings:
-        opening = opening.openings
+    for opening in openings_all:
         if opening.type == 'Дверные проемы внутренние':
             count_planks_openings_internal += (
                     (opening.wigth + opening.height) * 2 *
@@ -80,19 +79,19 @@ def calculate_frame(frame):
     volume_insulation_base_area = (square_insulation_base_area *
                                    thickness_insulation_base_area)
 
-    material = get_object_or_404(
-        Materials,
-        materials_type__materials_parameters__lenght=3000,
-        materials_type__materials_parameters__wedth=int(frame.external_wall_thickness),)
-    price_list = get_object_or_404(PriceList, material=material)
-    result_external_walls = Results.objects.create(
-        name=external_walls,
-        calculation=frame.calculations,
-        material=material,
-        amount=volume_plank_external_walls,
-        price=price_list
-    )
-    result_external_walls.save()
+    # material = get_object_or_404(
+    #     Materials,
+    #     materials_type__materials_parameters__lenght=3000,
+    #     materials_type__materials_parameters__wedth=int(frame.external_wall_thickness),)
+    # price_list = get_object_or_404(PriceList, material=material)
+    # result_external_walls = Results.objects.create(
+    #     name=external_walls,
+    #     calculation=frame.calculations,
+    #     material=material,
+    #     amount=volume_plank_external_walls,
+    #     price=price_list
+    # )
+    # result_external_walls.save()
 
     print('\n', volume_plank_external_walls, '\n',
           square_osb_external, '\n',

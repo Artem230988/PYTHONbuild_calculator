@@ -254,6 +254,10 @@ class StructuralElementFrame(models.Model):
         on_delete=models.PROTECT,
         related_name='structural_element_frame',
     )
+    openings = models.ManyToManyField(
+        'Openings',
+        verbose_name='Проемы',
+    )
     number_of_floors = models.IntegerField(
         verbose_name='Количество этажей'
     )
@@ -292,40 +296,29 @@ class StructuralElementFrame(models.Model):
         decimal_places=2,
         max_digits=10
     )
-    OSB = models.DecimalField(
-        verbose_name='ОСБ',
-        decimal_places=2,
-        max_digits=10
-    )
-    steam_waterproofing = models.DecimalField(
+    steam_waterproofing = models.CharField(
         verbose_name='Парогидроизоляция',
-        decimal_places=2,
-        max_digits=10
+        max_length=30,
     )
-    windscreen = models.DecimalField(
+    windscreen = models.CharField(
         verbose_name='Ветрозащита',
-        decimal_places=2,
-        max_digits=10
+        max_length=30,
     )
-    insulation = models.DecimalField(
+    insulation = models.CharField(
         verbose_name='Утеплитель',
-        decimal_places=2,
-        max_digits=10
+        max_length=30,
     )
-    OSB_for_interior_walls = models.DecimalField(
+    OSB_for_interior_walls = models.CharField(
         verbose_name='ОСБ для внутренних стен',
-        decimal_places=2,
-        max_digits=10
+        max_length=30,
     )
-    OSB_for_sub_floor = models.DecimalField(
+    OSB_for_sub_floor = models.CharField(
         verbose_name='ОСБ для чернового пола',
-        decimal_places=2,
-        max_digits=10
+        max_length=30,
     )
-    OSB_for_ceiling = models.DecimalField(
+    OSB_for_ceiling = models.CharField(
         verbose_name='ОСБ для потолка',
-        decimal_places=2,
-        max_digits=10
+        max_length=30,
     )
     step_of_racks = models.DecimalField(
         verbose_name='Шаг стоек',
@@ -362,22 +355,5 @@ class Openings(models.Model):
         verbose_name = 'Проем'
         verbose_name_plural = 'Проемы'
 
-
-class FrameOpenings(models.Model):
-    """Проемы к структурному элементу каркас."""
-    structural_element_frame = models.ForeignKey(
-        StructuralElementFrame,
-        verbose_name='Структурный элемент каркас',
-        on_delete=models.PROTECT,
-        related_name='frame_openings',
-    )
-    openings = models.ForeignKey(
-        Openings,
-        verbose_name='Проемы',
-        on_delete=models.PROTECT,
-        related_name='frame_openings',
-    )
-
-    class Meta:
-        verbose_name = 'Проем к структурному элементу каркас'
-        verbose_name_plural = 'Проемы к структурному элементу каркас'
+    def __str__(self):
+        return f'{self.type} Ш{self.height}В{self.height} кол-во{self.count}'
