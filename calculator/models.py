@@ -126,7 +126,7 @@ class Result(models.Model):
         related_name='results',
     )
     amount = models.DecimalField(
-        verbose_name='Шаг стоек',
+        verbose_name='Количество',
         decimal_places=2,
         max_digits=10
     )
