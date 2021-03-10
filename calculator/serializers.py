@@ -55,6 +55,46 @@ class FrameOpeningsSerializer(serializers.ModelSerializer):
                   'phone', 'email', 'adress', 'manager', )
 
 
+class OpeningsSerializer(serializers.ModelSerializer):
+    """Сериализатор для проемов."""
+
+    class Meta:
+        model = Opening
+        fields = '__all__'
+
+
+class StructuralElementFrameSerializer(serializers.ModelSerializer):
+    """Сериализатор для рассчетов."""
+    calculations = serializers.SlugRelatedField(
+        slug_field='title',
+        queryset=Calculation.objects.all(),
+        required=True,
+    )
+    openings = OpeningsSerializer(many=True)
+
+    class Meta:
+        model = StructuralElementFrame
+        fields = '__all__'
+
+
+class StructuralElementFramePostSerializer(serializers.ModelSerializer):
+    """Сериализатор для рассчетов."""
+    calculations = serializers.SlugRelatedField(
+        slug_field='title',
+        queryset=Calculation.objects.all(),
+        required=True,
+    )
+    openings = serializers.SlugRelatedField(
+        slug_field='id',
+        queryset=Opening.objects.all(),
+        many=True
+    )
+
+    class Meta:
+        model = StructuralElementFrame
+        fields = '__all__'
+
+
 class SpecificMaterialSerializer(serializers.ModelSerializer):
     """Сериализатор для конкретного материала."""
     material = serializers.CharField(source='material.name')
