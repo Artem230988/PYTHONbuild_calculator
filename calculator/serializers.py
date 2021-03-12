@@ -81,10 +81,10 @@ class StructuralElementFrameSerializer(serializers.ModelSerializer):
 
 class FrameOpeningsSerializer(serializers.ModelSerializer):
     frame = StructuralElementFrameSerializer()
-    openings = OpeningsSerializer(many=True)
+    opening = OpeningsSerializer(many=True)
 
     class Meta:
-        model = FrameOpenings
+        model = FrameOpening
         fields = '__all__'
 
 
