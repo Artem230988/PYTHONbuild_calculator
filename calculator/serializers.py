@@ -16,7 +16,7 @@ class CustomersSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Customers
-        fields = '__all__'
+        fields = ('id', 'last_name', 'first_name', 'second_name', 'phone', 'email', 'adress', 'manager', )
 
 
 class SpecificMaterialSerializer(serializers.ModelSerializer):
