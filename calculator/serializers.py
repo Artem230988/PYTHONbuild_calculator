@@ -55,6 +55,9 @@ class FrameOpeningsSerializer(serializers.ModelSerializer):
 
 class OpeningsSerializer(serializers.ModelSerializer):
     """Сериализатор для проемов."""
+    frame = serializers.CharField(
+        read_only=True
+    )
 
     class Meta:
         model = Opening
@@ -68,28 +71,18 @@ class StructuralElementFrameSerializer(serializers.ModelSerializer):
         queryset=Calculation.objects.all(),
         required=True,
     )
-    openings = OpeningsSerializer(many=True)
 
     class Meta:
         model = StructuralElementFrame
         fields = '__all__'
 
 
-class StructuralElementFramePostSerializer(serializers.ModelSerializer):
-    """Сериализатор для рассчетов."""
-    calculations = serializers.SlugRelatedField(
-        slug_field='title',
-        queryset=Calculation.objects.all(),
-        required=True,
-    )
-    openings = serializers.SlugRelatedField(
-        slug_field='id',
-        queryset=Opening.objects.all(),
-        many=True
-    )
+class FrameOpeningsSerializer(serializers.ModelSerializer):
+    frame = StructuralElementFrameSerializer()
+    opening = OpeningsSerializer(many=True)
 
     class Meta:
-        model = StructuralElementFrame
+        model = FrameOpening
         fields = '__all__'
 
 
