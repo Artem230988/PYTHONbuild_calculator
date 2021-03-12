@@ -16,7 +16,8 @@ class CustomersSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Customers
-        fields = ('id', 'last_name', 'first_name', 'second_name', 'phone', 'email', 'adress', 'manager', )
+        fields = ('id', 'last_name', 'first_name', 'second_name',
+                  'phone', 'email', 'adress', 'manager', )
 
 
 class OpeningsSerializer(serializers.ModelSerializer):
@@ -50,6 +51,8 @@ class FrameOpeningsSerializer(serializers.ModelSerializer):
     class Meta:
         model = FrameOpening
         fields = '__all__'
+        fields = ('id', 'last_name', 'first_name', 'second_name',
+                  'phone', 'email', 'adress', 'manager', )
 
 
 class SpecificMaterialSerializer(serializers.ModelSerializer):
@@ -59,7 +62,6 @@ class SpecificMaterialSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SpecificMaterial
-        fields = ('id', 'name', 'material', 'length', 'width', 'thickness', 'volume', 'measurement_unit')
 
 
 class ResultSerializer(serializers.ModelSerializer):
