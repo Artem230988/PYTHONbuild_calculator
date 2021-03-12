@@ -12,17 +12,14 @@ router.register(r'customers',
 # router2.register(r'customers/(?P<customers_id>\d+)/calculation',
 #                  views.CalculationViewSet,
 #                  basename='calculation')
-router.register(r'frame',
-                views.StructuralElementFrameViewSet,
-                basename='frame')
-router.register(r'orderings',
-                views.OpeningsViewSet,
-                basename='orderings')
+router.register(r'frame-orderings',
+                views.FrameOpeningsViewSet,
+                basename='frameorderings')
 
 urlpatterns = [
     path('', include(router.urls)),
 
     path('materials/', MaterialsListView.as_view(), name='materials'),
-    path('customers/<int:pk>/calculation/', CalculationListView.as_view(),
-         name='calculation'),
+    path('calculation/', CalculationListView.as_view(), name='calculation_list'),
+    path('calculation/<int:pk>', CalculationDetailView.as_view(), name='calculation_detail'),
 ]

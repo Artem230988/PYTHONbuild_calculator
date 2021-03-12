@@ -3,6 +3,9 @@ from rest_framework import serializers
 from .models import *
 
 
+User = get_user_model()
+
+
 class CustomersSerializer(serializers.ModelSerializer):
     """Сериализатор для заказчиков."""
     manager = serializers.SlugRelatedField(
@@ -13,14 +16,17 @@ class CustomersSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Customers
-        fields = '__all__'
+        fields = ('id', 'last_name', 'first_name', 'second_name', 'phone', 'email', 'adress', 'manager', )
 
 
 class OpeningsSerializer(serializers.ModelSerializer):
     """Сериализатор для проемов."""
+    frame = serializers.CharField(
+        read_only=True
+    )
 
     class Meta:
-        model = Openings
+        model = Opening
         fields = '__all__'
 
 
@@ -31,57 +37,49 @@ class StructuralElementFrameSerializer(serializers.ModelSerializer):
         queryset=Calculation.objects.all(),
         required=True,
     )
-    openings = OpeningsSerializer(many=True)
 
     class Meta:
         model = StructuralElementFrame
         fields = '__all__'
 
 
-class StructuralElementFramePostSerializer(serializers.ModelSerializer):
-    """Сериализатор для рассчетов."""
-    calculations = serializers.SlugRelatedField(
-        slug_field='title',
-        queryset=Calculation.objects.all(),
-        required=True,
-    )
-    openings = serializers.SlugRelatedField(
-        slug_field='id',
-        queryset=Openings.objects.all(),
-        many=True
-    )
+class FrameOpeningsSerializer(serializers.ModelSerializer):
+    frame = StructuralElementFrameSerializer()
+    opening = OpeningsSerializer(many=True)
 
     class Meta:
-        model = StructuralElementFrame
+        model = FrameOpening
         fields = '__all__'
 
 
-class SpecificMaterialsSerializer(serializers.ModelSerializer):
-    """Сериализатор для материалов."""
+class SpecificMaterialSerializer(serializers.ModelSerializer):
+    """Сериализатор для конкретного материала."""
+    material = serializers.CharField(source='material.name')
+    measurement_unit = serializers.CharField(source='measurement_unit.measurement_unit')
 
     class Meta:
         model = SpecificMaterial
-        fields = '__all__'
+        fields = ('id', 'name', 'material', 'length', 'width', 'thickness', 'volume', 'measurement_unit')
 
 
-class ResultsSerializer(serializers.ModelSerializer):
+class ResultSerializer(serializers.ModelSerializer):
     """Сериализатор для результатов по каждому материалу"""
-    specific_material = SpecificMaterialsSerializer()
+    specific_material = SpecificMaterialSerializer()
 
     class Meta:
-        model = Results
-        fields = ('name', 'specific_material', 'amount', 'price')
+        model = Result
+        fields = ('name', 'specific_material', 'amount', )
 
 
 class CalculationSerializer(serializers.ModelSerializer):
     """Сериализатор для расчетов."""
-    results = ResultsSerializer(many=True)
+    results = ResultSerializer(many=True)
     manager = serializers.SlugRelatedField(
         slug_field='username',
         read_only=True,
         default=serializers.CurrentUserDefault()
     )
-    customer = serializers.CharField(source='customer.first_name')
+    customer = CustomersSerializer()
 
     class Meta:
         model = Calculation

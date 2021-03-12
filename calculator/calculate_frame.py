@@ -10,20 +10,22 @@ def calculate_frame(frame):
     # Общие данные
     square_external_walls = (
             frame.perimeter_of_external_walls *
-            frame.height_of_one_floor *
-            frame.number_of_floors
+            frame.height_of_one_floor
     )
     square_internal_walls = (
             frame.internal_wall_length *
-            frame.height_of_one_floor *
-            frame.number_of_floors
+            frame.height_of_one_floor
     )
 
     external_walls = 'Внешние стены'
     count_planks_external_walls = ceil(frame.perimeter_of_external_walls /
                                        frame.step_of_racks + 1)
-    count_planks_floor = ceil(frame.perimeter_of_external_walls * 2 / 3)
-    openings_all = frame.openings.all()
+    if frame.number_of_floors == 1:
+        mains = 2
+    else:
+        mains = 1
+    count_planks_floor = ceil(frame.perimeter_of_external_walls * mains / 3)
+    openings_all = Opening.objects.filter(frame=frame)
     count_planks_openings_external = 0
     square_openings = 0
     for opening in openings_all:
@@ -39,7 +41,7 @@ def calculate_frame(frame):
     volume_plank_external_walls = (total_planks_external *
                                    wigth_plank_external_walls *
                                    3 * Decimal('0.05'))
-    square_osb_external = square_external_walls * 2 * Decimal('1.15')
+    square_osb_external = square_external_walls * mains * Decimal('1.15')
     square_steam_waterproofing_external = square_external_walls * Decimal(
         '1.15')
     square_windscreen_external = square_steam_waterproofing_external
@@ -71,10 +73,10 @@ def calculate_frame(frame):
     wigth_plank_base_area = frame.overlap_thickness / 1000
     volume_plank_base_area = (count_planks_base_area *
                               wigth_plank_base_area * 6 * Decimal('0.05'))
-    square_osb_base_area = frame.base_area * 2 * 2 * Decimal('1.15')
+    square_osb_base_area = frame.base_area * mains * 2 * Decimal('1.15')
     square_steam_waterproofing_base_area = frame.base_area * Decimal('1.15')
     square_windscreen_base_area = square_steam_waterproofing_base_area
-    square_insulation_base_area = frame.base_area * Decimal('1.1') * 2
+    square_insulation_base_area = frame.base_area * Decimal('1.1') * mains
     thickness_insulation_base_area = frame.overlap_thickness / 1000
     volume_insulation_base_area = (square_insulation_base_area *
                                    thickness_insulation_base_area)

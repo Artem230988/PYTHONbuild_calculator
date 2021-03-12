@@ -106,8 +106,8 @@ class CalculationState(models.Model):
         return self.title
 
 
-class Results(models.Model):
-    """Результаты."""
+class Result(models.Model):
+    """Результат."""
     calculation = models.ForeignKey(
         Calculation,
         verbose_name='Расчет',
@@ -143,8 +143,8 @@ class Results(models.Model):
         verbose_name_plural = 'Результаты'
 
 
-class Materials(models.Model):
-    """Материалы."""
+class Material(models.Model):
+    """Материал."""
     name = models.CharField(
         max_length=50,
         verbose_name='Название'
@@ -164,11 +164,12 @@ class SpecificMaterial(models.Model):
         max_length=50,
         verbose_name='Название материала'
     )
+    material = models.ForeignKey(Material, verbose_name='Материал', on_delete=models.PROTECT, related_name='specific_materials')
     measurement_unit = models.ForeignKey(
         'MeasurementUnit',
         verbose_name='Единица измерения',
         on_delete=models.PROTECT,
-        related_name='materials_type',
+        related_name='specific_materials',
     )
     length = models.DecimalField(
         verbose_name='Длина',
@@ -254,10 +255,6 @@ class StructuralElementFrame(models.Model):
         on_delete=models.PROTECT,
         related_name='structural_element_frame',
     )
-    openings = models.ManyToManyField(
-        'Openings',
-        verbose_name='Проемы',
-    )
     number_of_floors = models.IntegerField(
         verbose_name='Количество этажей'
     )
@@ -331,8 +328,28 @@ class StructuralElementFrame(models.Model):
         verbose_name_plural = 'Конструктивный элемент каркас'
 
 
-class Openings(models.Model):
-    """Проемы."""
+class FrameOpening(models.Model):
+    """Связь каркаса и проемов"""
+    frame = models.ForeignKey(
+        StructuralElementFrame,
+        verbose_name='каркас',
+        on_delete=models.PROTECT,
+    )
+    opening = models.ForeignKey(
+        'Opening',
+        verbose_name='проем',
+        on_delete=models.PROTECT,
+    )
+
+
+class Opening(models.Model):
+    """Проем."""
+    frame = models.ForeignKey(
+        StructuralElementFrame,
+        verbose_name='каркас',
+        on_delete=models.PROTECT,
+        related_name='frame',
+    )
     type = models.CharField(
         max_length=50,
         verbose_name='Тип проема'
