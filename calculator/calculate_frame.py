@@ -185,7 +185,8 @@ def calculate_frame(frame):
             calculation=frame.calculations,
             specific_material=planks_mat,
             amount=volume_plank[i],
-            price=price_list_planks
+            price=price_list_planks,
+
         )
         result_planks.save()
 
