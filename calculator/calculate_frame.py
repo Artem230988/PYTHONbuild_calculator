@@ -58,11 +58,11 @@ def calculate_frame(frame):
             ceil(count_planks_openings_external / LENS_PLANKS_WALLS)
     )
     # Ширина доски на внешние стены
-    wigth_plank_external_walls = frame.external_wall_thickness / MM_IN_METER
+    width_plank_external_walls = frame.external_wall_thickness / MM_IN_METER
     # Объем досок на внешние стены
     volume_plank_external_walls = (
             total_planks_external *
-            wigth_plank_external_walls *
+            width_plank_external_walls *
             LENS_PLANKS_WALLS *
             THICKNESS_PLANKS
     )
@@ -151,27 +151,40 @@ def calculate_frame(frame):
             square_insulation_base_area * thickness_insulation_base_area
     )
 
-    # material = get_object_or_404(
-    #     Materials,
-    #     materials_type__materials_parameters__lenght=3000,
-    #     materials_type__materials_parameters__wedth=int(frame.external_wall_thickness),)
-    # price_list = get_object_or_404(PriceList, material=material)
-    # result_external_walls = Results.objects.create(
-    #     name=external_walls,
-    #     calculation=frame.calculations,
-    #     material=material,
-    #     amount=volume_plank_external_walls,
-    #     price=price_list
-    # )
-    # result_external_walls.save()
-
-    print('\n', volume_plank_external_walls, '\n',
-          square_osb_external, '\n',
-          square_windscreen_external, '\n',
-          volume_insulation_external, '\n',
-          volume_plank_internal_walls, '\n',
-          square_osb_internal, '\n',
-          volume_plank_base_area, '\n',
-          square_osb_base_area, '\n',
-          square_windscreen_base_area, '\n',
-          volume_insulation_base_area, '\n', )
+    # Сохранение результатов досок
+    material = get_object_or_404(
+        Material,
+        name='Доска'
+    )
+    thickness = [
+        frame.external_wall_thickness,
+        frame.internal_wall_thickness,
+        frame.overlap_thickness
+    ]
+    volume_plank = [
+        volume_plank_external_walls,
+        volume_plank_internal_walls,
+        volume_plank_base_area
+    ]
+    name = [
+        external_walls,
+        internal_walls,
+        base_area
+    ]
+    for i in range(len(thickness)):
+        planks_mat = get_object_or_404(
+            SpecificMaterial,
+            material=material,
+            width=thickness[i]
+        )
+        price_list_planks = PriceList.objects.filter(
+            specific_material=planks_mat
+        )[0]
+        result_planks = Result.objects.create(
+            name=name[i],
+            calculation=frame.calculations,
+            specific_material=planks_mat,
+            amount=volume_plank[i],
+            price=price_list_planks
+        )
+        result_planks.save()

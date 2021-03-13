@@ -69,7 +69,8 @@ class ResultSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Result
-        fields = ('name', 'specific_material', 'amount', )
+        fields = ('name', 'specific_material', 'amount',
+                  'price', 'full_price')
 
 
 class CalculationSerializer(serializers.ModelSerializer):

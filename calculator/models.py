@@ -45,7 +45,7 @@ class Customers(models.Model):
         verbose_name_plural = 'Заказчики'
 
     def __str__(self):
-        name = self.last_name + ' ' + self.first_name
+        name = f'{self.last_name} {self.first_name}'
         return name
 
 
@@ -125,7 +125,11 @@ class Result(models.Model):
         on_delete=models.PROTECT,
         related_name='results',
     )
-    amount = models.PositiveIntegerField('Количество')
+    amount = models.DecimalField(
+        verbose_name='Шаг стоек',
+        decimal_places=2,
+        max_digits=10
+    )
     price = models.ForeignKey(
         'PriceList',
         verbose_name='Прайс лист',
@@ -141,6 +145,9 @@ class Result(models.Model):
     class Meta:
         verbose_name = 'Результат'
         verbose_name_plural = 'Результаты'
+
+    def __str__(self):
+        return self.name
 
 
 class Material(models.Model):
@@ -164,7 +171,12 @@ class SpecificMaterial(models.Model):
         max_length=50,
         verbose_name='Название материала'
     )
-    material = models.ForeignKey(Material, verbose_name='Материал', on_delete=models.PROTECT, related_name='specific_materials')
+    material = models.ForeignKey(
+        Material,
+        verbose_name='Материал',
+        on_delete=models.PROTECT,
+        related_name='specific_materials'
+    )
     measurement_unit = models.ForeignKey(
         'MeasurementUnit',
         verbose_name='Единица измерения',
@@ -242,6 +254,7 @@ class PriceList(models.Model):
     class Meta:
         verbose_name = 'Прайс лист'
         verbose_name_plural = 'Прайс листы'
+        ordering = ['-data']
 
     def __str__(self):
         return self.specific_material.name
