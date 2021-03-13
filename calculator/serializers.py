@@ -60,7 +60,7 @@ class SpecificMaterialSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SpecificMaterial
-        fields = '__all__'
+        fields = ('id', 'material', 'measurement_unit', 'name')
 
 
 class ResultSerializer(serializers.ModelSerializer):

@@ -221,3 +221,100 @@ def calculate_frame(frame):
             price=price_list_osb
         )
         result_osb.save()
+
+    name_two = [
+        external_walls,
+        base_area
+    ]
+    # Сохранение результатов парогидроизоляции
+    material_steam_waterproofing = get_object_or_404(
+        Material,
+        name='Парогидроизоляция'
+    )
+    steam_waterproofing = [
+        frame.steam_waterproofing_external_walls,
+        frame.steam_waterproofing_base_area
+    ]
+    square_steam_waterproofing = [
+        square_steam_waterproofing_external,
+        square_steam_waterproofing_base_area
+    ]
+    for w in range(len(steam_waterproofing)):
+        steam_waterproofing_mat = get_object_or_404(
+            SpecificMaterial,
+            material=material_steam_waterproofing,
+            name=steam_waterproofing[w]
+        )
+        price_list_steam_waterproofing_mat = PriceList.objects.filter(
+            specific_material=steam_waterproofing_mat
+        )[0]
+        result_steam_waterproofing = Result.objects.create(
+            name=name_two[w],
+            calculation=frame.calculations,
+            specific_material=steam_waterproofing_mat,
+            amount=square_steam_waterproofing[w],
+            price=price_list_steam_waterproofing_mat
+        )
+        result_steam_waterproofing.save()
+
+    # Сохранение результатов ветрозащиты
+    material_windscreen = get_object_or_404(
+        Material,
+        name='Ветрозащита'
+    )
+    windscreen = [
+        frame.windscreen_external_walls,
+        frame.windscreen_base_area
+    ]
+    square_windscreen = [
+        square_windscreen_external,
+        square_windscreen_base_area
+    ]
+    for v in range(len(windscreen)):
+        windscreen_mat = get_object_or_404(
+            SpecificMaterial,
+            material=material_windscreen,
+            name=windscreen[v]
+        )
+        price_list_windscreen_mat = PriceList.objects.filter(
+            specific_material=windscreen_mat
+        )[0]
+        result_windscreen = Result.objects.create(
+            name=name_two[v],
+            calculation=frame.calculations,
+            specific_material=windscreen_mat,
+            amount=square_windscreen[v],
+            price=price_list_windscreen_mat
+        )
+        result_windscreen.save()
+
+    # Сохранение результатов утеплителя
+    material_insulation = get_object_or_404(
+        Material,
+        name='Утеплитель'
+    )
+    insulation = [
+        frame.insulation_external_walls,
+        frame.insulation_base_area
+    ]
+    volume_insulation = [
+        volume_insulation_external,
+        volume_insulation_base_area
+    ]
+    for s in range(len(insulation)):
+        insulation_mat = get_object_or_404(
+            SpecificMaterial,
+            material=material_insulation,
+            name=insulation[s]
+        )
+        price_list_insulation_mat = PriceList.objects.filter(
+            specific_material=insulation_mat
+        )[0]
+        result_insulation = Result.objects.create(
+            name=name_two[s],
+            calculation=frame.calculations,
+            specific_material=insulation_mat,
+            amount=volume_insulation[s],
+            price=price_list_insulation_mat
+        )
+        result_insulation.save()

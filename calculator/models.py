@@ -306,17 +306,35 @@ class StructuralElementFrame(models.Model):
         decimal_places=2,
         max_digits=10
     )
-    steam_waterproofing = models.CharField(
+    steam_waterproofing_external_walls = models.CharField(
         verbose_name='Парогидроизоляция',
         max_length=30,
+        default='1'
     )
-    windscreen = models.CharField(
+    steam_waterproofing_base_area = models.CharField(
+        verbose_name='Парогидроизоляция',
+        max_length=30,
+        default='1'
+    )
+    windscreen_external_walls = models.CharField(
         verbose_name='Ветрозащита',
         max_length=30,
+        default='1'
     )
-    insulation = models.CharField(
+    windscreen_base_area = models.CharField(
+        verbose_name='Ветрозащита',
+        max_length=30,
+        default='1'
+    )
+    insulation_external_walls = models.CharField(
         verbose_name='Утеплитель',
         max_length=30,
+        default='1'
+    )
+    insulation_base_area = models.CharField(
+        verbose_name='Утеплитель',
+        max_length=30,
+        default='1'
     )
     OSB_for_interior_walls = models.CharField(
         verbose_name='ОСБ для внутренних стен',
