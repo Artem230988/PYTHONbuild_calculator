@@ -4,11 +4,11 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# SECRET_KEY = '*9dwht^)&od&urxjy4-qw=16&+5_wj_^m$7p(son2^!k1ko8j)'
-#
-# DEBUG = True
-#
-# ALLOWED_HOSTS = []
+SECRET_KEY = '*9dwht^)&od&urxjy4-qw=16&+5_wj_^m$7p(son2^!k1ko8j)'
+
+DEBUG = True
+
+ALLOWED_HOSTS = []
 
 SECRET_KEY = os.environ.get("SECRET_KEY")
 

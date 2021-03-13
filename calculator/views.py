@@ -47,20 +47,22 @@ class MaterialsListView(generics.ListAPIView):
     """Список всех материалов"""
     queryset = SpecificMaterial.objects.all()
     serializer_class = SpecificMaterialSerializer
-    # permission_classes = [permissions.IsAuthenticated, ]
+    permission_classes = [permissions.IsAuthenticated, ]
 
 
 class CalculationListView(generics.ListAPIView):
     """Список расчетов"""
     serializer_class = CalculationSerializer
-    # permission_classes = [permissions.IsAuthenticated, ]
+    permission_classes = [permissions.IsAuthenticated, ]
 
     def get_queryset(self):
         return Calculation.objects.filter(manager=self.request.user)
 
 
-class CalculationDetailView(generics.ListAPIView):
+class CalculationDetailView(generics.RetrieveAPIView):
     """Расчет детально"""
-    queryset = Calculation.objects.all()
     serializer_class = CalculationSerializer
-    # permission_classes = [permissions.IsAuthenticated, ]
+    permission_classes = [permissions.IsAuthenticated, ]
+
+    def get_queryset(self):
+        return Calculation.objects.filter(manager=self.request.user)
