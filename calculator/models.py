@@ -322,13 +322,15 @@ class StructuralElementFrame(models.Model):
         verbose_name='ОСБ для внутренних стен',
         max_length=30,
     )
-    OSB_for_sub_floor = models.CharField(
-        verbose_name='ОСБ для чернового пола',
+    OSB_for_external_walls = models.CharField(
+        verbose_name='ОСБ для наружных стен',
         max_length=30,
+        default='1'
     )
-    OSB_for_ceiling = models.CharField(
-        verbose_name='ОСБ для потолка',
+    OSB_for_base_area = models.CharField(
+        verbose_name='ОСБ для потолка и пола',
         max_length=30,
+        default='1'
     )
     step_of_racks = models.DecimalField(
         verbose_name='Шаг стоек',

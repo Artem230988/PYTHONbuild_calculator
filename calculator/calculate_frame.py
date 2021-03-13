@@ -151,8 +151,13 @@ def calculate_frame(frame):
             square_insulation_base_area * thickness_insulation_base_area
     )
 
+    name_all = [
+        external_walls,
+        internal_walls,
+        base_area
+    ]
     # Сохранение результатов досок
-    material = get_object_or_404(
+    material_plank = get_object_or_404(
         Material,
         name='Доска'
     )
@@ -166,25 +171,53 @@ def calculate_frame(frame):
         volume_plank_internal_walls,
         volume_plank_base_area
     ]
-    name = [
-        external_walls,
-        internal_walls,
-        base_area
-    ]
     for i in range(len(thickness)):
         planks_mat = get_object_or_404(
             SpecificMaterial,
-            material=material,
+            material=material_plank,
             width=thickness[i]
         )
         price_list_planks = PriceList.objects.filter(
             specific_material=planks_mat
         )[0]
         result_planks = Result.objects.create(
-            name=name[i],
+            name=name_all[i],
             calculation=frame.calculations,
             specific_material=planks_mat,
             amount=volume_plank[i],
             price=price_list_planks
         )
         result_planks.save()
+
+    # Сохранение результатов ОСБ
+    material_osb = get_object_or_404(
+        Material,
+        name='OSB'
+    )
+    osb = [
+        frame.OSB_for_external_walls,
+        frame.OSB_for_interior_walls,
+        frame.OSB_for_base_area
+    ]
+    square_osb = [
+        square_osb_external,
+        square_osb_internal,
+        square_osb_base_area
+    ]
+    for j in range(len(osb)):
+        osb_mat = get_object_or_404(
+            SpecificMaterial,
+            material=material_osb,
+            name=osb[j]
+        )
+        price_list_osb = PriceList.objects.filter(
+            specific_material=osb_mat
+        )[0]
+        result_osb = Result.objects.create(
+            name=name_all[j],
+            calculation=frame.calculations,
+            specific_material=osb_mat,
+            amount=square_osb[j],
+            price=price_list_osb
+        )
+        result_osb.save()
