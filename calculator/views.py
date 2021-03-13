@@ -14,6 +14,7 @@ class CustomersViewSet(viewsets.ModelViewSet):
     """CRUD для заказчиков."""
     http_method_names = ['get', 'post', 'patch', 'delete', 'head', 'options']
     serializer_class = CustomersSerializer
+    permission_classes = [permissions.IsAuthenticated, ]
 
     def get_queryset(self):
         manager = self.request.user.id

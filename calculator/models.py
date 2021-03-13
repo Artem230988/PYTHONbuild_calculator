@@ -60,7 +60,7 @@ class Calculation(models.Model):
     customer = models.ForeignKey(
         Customers,
         verbose_name='Заказчик',
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         related_name='calculation',
     )
     adress_object_construction = models.CharField(
@@ -111,7 +111,7 @@ class Result(models.Model):
     calculation = models.ForeignKey(
         Calculation,
         verbose_name='Расчет',
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         related_name='results',
     )
     name = models.CharField(
