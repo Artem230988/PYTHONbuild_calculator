@@ -32,7 +32,7 @@ def calculate_frame(frame):
             frame.height_of_one_floor
     )
 
-    external_walls = f'Внешние стены для этажа №{frame.number_of_floors}'
+    external_walls = f'Внешние стены'
     # Количество досок на внешние стойки
     count_planks_external_walls = ceil(
         frame.perimeter_of_external_walls / frame.step_of_racks + 1
@@ -89,7 +89,7 @@ def calculate_frame(frame):
             square_insulation_external_walls * thickness_insulation_external
     )
 
-    internal_walls = f'Внутренние стены для этажа №{frame.number_of_floors}'
+    internal_walls = f'Внутренние стены'
     # Количество досок на внутренние стойки
     count_planks_internal_walls = ceil(
         frame.internal_wall_length / frame.step_of_racks
@@ -118,7 +118,7 @@ def calculate_frame(frame):
     # Площадь ОСБ на внутренние стены
     square_osb_internal = square_internal_walls * 2 * PROCENT_COVERING
 
-    base_area = f'Перекрытия для этажа №{frame.number_of_floors}'
+    base_area = f'Перекрытия'
     # Кол-во балок перекрытий
     count_planks_base_area = ceil(
         frame.base_area * STEP_PLANKS_BASE_AREA
@@ -172,11 +172,20 @@ def calculate_frame(frame):
         volume_plank_base_area
     ]
     for i in range(len(thickness)):
-        planks_mat = get_object_or_404(
-            SpecificMaterial,
-            material=material_plank,
-            width=thickness[i]
-        )
+        if name_all[i] != base_area:
+            planks_mat = get_object_or_404(
+                SpecificMaterial,
+                material=material_plank,
+                width=thickness[i],
+                length=LENS_PLANKS_WALLS * MM_IN_METER
+            )
+        else:
+            planks_mat = get_object_or_404(
+                SpecificMaterial,
+                material=material_plank,
+                width=thickness[i],
+                length=LENS_PLANKS_BASE_AREA * MM_IN_METER
+            )
         price_list_planks = PriceList.objects.filter(
             specific_material=planks_mat
         )[0]
@@ -186,7 +195,7 @@ def calculate_frame(frame):
             specific_material=planks_mat,
             amount=volume_plank[i],
             price=price_list_planks,
-
+            floor=frame.number_of_floors
         )
         result_planks.save()
 
@@ -219,7 +228,8 @@ def calculate_frame(frame):
             calculation=frame.calculations,
             specific_material=osb_mat,
             amount=square_osb[j],
-            price=price_list_osb
+            price=price_list_osb,
+            floor=frame.number_of_floors
         )
         result_osb.save()
 
@@ -254,7 +264,8 @@ def calculate_frame(frame):
             calculation=frame.calculations,
             specific_material=steam_waterproofing_mat,
             amount=square_steam_waterproofing[w],
-            price=price_list_steam_waterproofing_mat
+            price=price_list_steam_waterproofing_mat,
+            floor=frame.number_of_floors
         )
         result_steam_waterproofing.save()
 
@@ -285,7 +296,8 @@ def calculate_frame(frame):
             calculation=frame.calculations,
             specific_material=windscreen_mat,
             amount=square_windscreen[v],
-            price=price_list_windscreen_mat
+            price=price_list_windscreen_mat,
+            floor=frame.number_of_floors
         )
         result_windscreen.save()
 
@@ -316,6 +328,7 @@ def calculate_frame(frame):
             calculation=frame.calculations,
             specific_material=insulation_mat,
             amount=volume_insulation[s],
-            price=price_list_insulation_mat
+            price=price_list_insulation_mat,
+            floor=frame.number_of_floors
         )
         result_insulation.save()

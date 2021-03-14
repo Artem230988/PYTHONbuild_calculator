@@ -72,11 +72,6 @@ class Calculation(models.Model):
         'Название',
         max_length=255
     )
-    floor = models.IntegerField(
-        verbose_name='Этаж',
-        blank=True,
-        null=True
-    )
     created_date = models.DateField(
         'Дата создания',
         auto_now_add=True
@@ -123,6 +118,11 @@ class Result(models.Model):
         max_length=50,
         verbose_name='Часть здания',
         default='qwerty'
+    )
+    floor = models.IntegerField(
+        verbose_name='Этаж',
+        blank=True,
+        null=True
     )
     specific_material = models.ForeignKey(
         'SpecificMaterial',
