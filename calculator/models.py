@@ -45,7 +45,7 @@ class Customers(models.Model):
         verbose_name_plural = 'Заказчики'
 
     def __str__(self):
-        name = self.last_name + ' ' + self.first_name
+        name = f'{self.last_name} {self.first_name}'
         return name
 
 
@@ -60,7 +60,7 @@ class Calculation(models.Model):
     customer = models.ForeignKey(
         Customers,
         verbose_name='Заказчик',
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         related_name='calculation',
     )
     adress_object_construction = models.CharField(
@@ -111,7 +111,7 @@ class Result(models.Model):
     calculation = models.ForeignKey(
         Calculation,
         verbose_name='Расчет',
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         related_name='results',
     )
     name = models.CharField(
@@ -125,7 +125,11 @@ class Result(models.Model):
         on_delete=models.PROTECT,
         related_name='results',
     )
-    amount = models.PositiveIntegerField('Количество')
+    amount = models.DecimalField(
+        verbose_name='Количество',
+        decimal_places=2,
+        max_digits=10
+    )
     price = models.ForeignKey(
         'PriceList',
         verbose_name='Прайс лист',
@@ -141,6 +145,9 @@ class Result(models.Model):
     class Meta:
         verbose_name = 'Результат'
         verbose_name_plural = 'Результаты'
+
+    def __str__(self):
+        return self.name
 
 
 class Material(models.Model):
@@ -164,7 +171,12 @@ class SpecificMaterial(models.Model):
         max_length=50,
         verbose_name='Название материала'
     )
-    material = models.ForeignKey(Material, verbose_name='Материал', on_delete=models.PROTECT, related_name='specific_materials')
+    material = models.ForeignKey(
+        Material,
+        verbose_name='Материал',
+        on_delete=models.PROTECT,
+        related_name='specific_materials'
+    )
     measurement_unit = models.ForeignKey(
         'MeasurementUnit',
         verbose_name='Единица измерения',
@@ -242,6 +254,7 @@ class PriceList(models.Model):
     class Meta:
         verbose_name = 'Прайс лист'
         verbose_name_plural = 'Прайс листы'
+        ordering = ['-data']
 
     def __str__(self):
         return self.specific_material.name
@@ -293,40 +306,49 @@ class StructuralElementFrame(models.Model):
         decimal_places=2,
         max_digits=10
     )
-    OSB = models.DecimalField(
-        verbose_name='ОСБ',
-        decimal_places=2,
-        max_digits=10
-    )
-    steam_waterproofing = models.DecimalField(
+    steam_waterproofing_external_walls = models.CharField(
         verbose_name='Парогидроизоляция',
-        decimal_places=2,
-        max_digits=10
+        max_length=30,
+        default='1'
     )
-    windscreen = models.DecimalField(
+    steam_waterproofing_base_area = models.CharField(
+        verbose_name='Парогидроизоляция',
+        max_length=30,
+        default='1'
+    )
+    windscreen_external_walls = models.CharField(
         verbose_name='Ветрозащита',
-        decimal_places=2,
-        max_digits=10
+        max_length=30,
+        default='1'
     )
-    insulation = models.DecimalField(
+    windscreen_base_area = models.CharField(
+        verbose_name='Ветрозащита',
+        max_length=30,
+        default='1'
+    )
+    insulation_external_walls = models.CharField(
         verbose_name='Утеплитель',
-        decimal_places=2,
-        max_digits=10
+        max_length=30,
+        default='1'
     )
-    OSB_for_interior_walls = models.DecimalField(
+    insulation_base_area = models.CharField(
+        verbose_name='Утеплитель',
+        max_length=30,
+        default='1'
+    )
+    OSB_for_interior_walls = models.CharField(
         verbose_name='ОСБ для внутренних стен',
-        decimal_places=2,
-        max_digits=10
+        max_length=30,
     )
-    OSB_for_sub_floor = models.DecimalField(
-        verbose_name='ОСБ для чернового пола',
-        decimal_places=2,
-        max_digits=10
+    OSB_for_external_walls = models.CharField(
+        verbose_name='ОСБ для наружных стен',
+        max_length=30,
+        default='1'
     )
-    OSB_for_ceiling = models.DecimalField(
-        verbose_name='ОСБ для потолка',
-        decimal_places=2,
-        max_digits=10
+    OSB_for_base_area = models.CharField(
+        verbose_name='ОСБ для потолка и пола',
+        max_length=30,
+        default='1'
     )
     step_of_racks = models.DecimalField(
         verbose_name='Шаг стоек',
@@ -339,8 +361,28 @@ class StructuralElementFrame(models.Model):
         verbose_name_plural = 'Конструктивный элемент каркас'
 
 
+class FrameOpening(models.Model):
+    """Связь каркаса и проемов"""
+    frame = models.ForeignKey(
+        StructuralElementFrame,
+        verbose_name='каркас',
+        on_delete=models.PROTECT,
+    )
+    opening = models.ForeignKey(
+        'Opening',
+        verbose_name='проем',
+        on_delete=models.PROTECT,
+    )
+
+
 class Opening(models.Model):
     """Проем."""
+    frame = models.ForeignKey(
+        StructuralElementFrame,
+        verbose_name='каркас',
+        on_delete=models.PROTECT,
+        related_name='frame',
+    )
     type = models.CharField(
         max_length=50,
         verbose_name='Тип проема'
@@ -363,22 +405,5 @@ class Opening(models.Model):
         verbose_name = 'Проем'
         verbose_name_plural = 'Проемы'
 
-
-class FrameOpening(models.Model):
-    """Проем к структурному элементу каркас."""
-    structural_element_frame = models.ForeignKey(
-        StructuralElementFrame,
-        verbose_name='Структурный элемент каркас',
-        on_delete=models.PROTECT,
-        related_name='frame_openings',
-    )
-    openings = models.ForeignKey(
-        Opening,
-        verbose_name='Проемы',
-        on_delete=models.PROTECT,
-        related_name='frame_openings',
-    )
-
-    class Meta:
-        verbose_name = 'Проем к структурному элементу каркас'
-        verbose_name_plural = 'Проемы к структурному элементу каркас'
+    def __str__(self):
+        return f'{self.type} Ш{self.height}В{self.height} кол-во{self.count}'
