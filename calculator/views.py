@@ -1,9 +1,5 @@
-from django.shortcuts import get_object_or_404
-from requests import Response
+from django.shortcuts import redirect
 from rest_framework import viewsets, mixins, generics, permissions
-from rest_framework.decorators import api_view
-from rest_framework.permissions import SAFE_METHODS
-from rest_framework.viewsets import GenericViewSet
 
 from .calculate_frame import calculate_frame
 from .serializers import *
@@ -28,22 +24,43 @@ class CustomersViewSet(viewsets.ModelViewSet):
 class FrameOpeningsViewSet(mixins.CreateModelMixin, mixins.ListModelMixin,
                            viewsets.GenericViewSet):
     queryset = FrameOpening.objects.all()
-    serializer_class = FrameOpeningsSerializer
+    serializer_class = FrameSerializer
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        id = self.perform_create(serializer)
+        return redirect('calculation_detail', pk=id)
 
     def perform_create(self, serializer):
-        openings = serializer.validated_data['opening']
-        frame = StructuralElementFrameSerializer(
-            data=serializer.validated_data['frame']
+        customer = serializer.validated_data['calculation']['customer']
+        state_calculation = serializer.validated_data['calculation']['state_calculation']
+        title = serializer.validated_data['calculation']['title']
+        adress_object_construction = serializer.validated_data['calculation']['adress_object_construction']
+        calculation = Calculation.objects.create(
+            customer=customer,
+            state_calculation=state_calculation,
+            title=title,
+            adress_object_construction=adress_object_construction,
+            manager=self.request.user
         )
-        frame.is_valid()
-        frame.save()
-        frames = StructuralElementFrame.objects.all()
-        last_frame = frames[len(frames)-1]
-        for opening in openings:
-            opening = OpeningsSerializer(data=opening)
-            opening.is_valid()
-            opening.save(frame=last_frame)
-        calculate_frame(last_frame)
+        frames = serializer.validated_data['frame']
+        for data in frames:
+            print(data)
+            openings = data['opening']
+            frame = StructuralElementFrameSerializer(
+                data=data['frame']
+            )
+            frame.is_valid()
+            frame.save(calculations=calculation)
+            frames = StructuralElementFrame.objects.all()
+            last_frame = frames[len(frames)-1]
+            for opening in openings:
+                opening = OpeningsSerializer(data=opening)
+                opening.is_valid()
+                opening.save(frame=last_frame)
+            calculate_frame(last_frame)
+        return calculation.id
 
 
 class MaterialsListView(generics.ListAPIView):

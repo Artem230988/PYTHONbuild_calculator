@@ -20,72 +20,6 @@ class CustomersSerializer(serializers.ModelSerializer):
                   'phone', 'email', 'adress', 'manager', )
 
 
-class OpeningsSerializer(serializers.ModelSerializer):
-    """Сериализатор для проемов."""
-    frame = serializers.CharField(
-        read_only=True
-    )
-
-    class Meta:
-        model = Opening
-        fields = '__all__'
-
-
-class StructuralElementFrameSerializer(serializers.ModelSerializer):
-    """Сериализатор для рассчетов."""
-    calculations = serializers.SlugRelatedField(
-        slug_field='title',
-        queryset=Calculation.objects.all(),
-        required=True,
-    )
-
-    class Meta:
-        model = StructuralElementFrame
-        fields = '__all__'
-
-
-class FrameOpeningsSerializer(serializers.ModelSerializer):
-    frame = StructuralElementFrameSerializer()
-    opening = OpeningsSerializer(many=True)
-
-    class Meta:
-        model = FrameOpening
-        fields = '__all__'
-
-
-class OpeningsSerializer(serializers.ModelSerializer):
-    """Сериализатор для проемов."""
-    frame = serializers.CharField(
-        read_only=True
-    )
-
-    class Meta:
-        model = Opening
-        fields = '__all__'
-
-
-class StructuralElementFrameSerializer(serializers.ModelSerializer):
-    """Сериализатор для рассчетов."""
-    calculations = serializers.SlugRelatedField(
-        slug_field='title',
-        queryset=Calculation.objects.all(),
-        required=True,
-    )
-
-    class Meta:
-        model = StructuralElementFrame
-        fields = '__all__'
-
-
-class FrameOpeningsSerializer(serializers.ModelSerializer):
-    frame = StructuralElementFrameSerializer()
-    opening = OpeningsSerializer(many=True)
-
-    class Meta:
-        model = FrameOpening
-        fields = '__all__'
-
-
 class SpecificMaterialSerializer(serializers.ModelSerializer):
     """Сериализатор для конкретного материала."""
     material = serializers.CharField(source='material.name')
@@ -121,3 +55,58 @@ class CalculationSerializer(serializers.ModelSerializer):
         fields = ('id', 'title', 'manager', 'customer',
                   'adress_object_construction', 'created_date',
                   'state_calculation', 'results')
+
+
+class OpeningsSerializer(serializers.ModelSerializer):
+    """Сериализатор для проемов."""
+    frame = serializers.CharField(
+        read_only=True
+    )
+
+    class Meta:
+        model = Opening
+        fields = '__all__'
+
+
+class StructuralElementFrameSerializer(serializers.ModelSerializer):
+    """Сериализатор для рассчетов."""
+
+    class Meta:
+        model = StructuralElementFrame
+        exclude = ('calculations',)
+
+
+class FrameOpeningsSerializer(serializers.ModelSerializer):
+    frame = StructuralElementFrameSerializer()
+    opening = OpeningsSerializer(many=True)
+
+    class Meta:
+        model = FrameOpening
+        fields = '__all__'
+
+
+class CalculationPostSerializer(serializers.ModelSerializer):
+    """Сериализатор для расчетов."""
+    customer = serializers.SlugRelatedField(
+        slug_field='pk',
+        queryset=Customers.objects.all(),
+        required=True,
+    )
+    state_calculation = serializers.SlugRelatedField(
+        slug_field='title',
+        queryset=CalculationState.objects.all(),
+        required=True,
+    )
+    manager = serializers.SlugRelatedField(
+        slug_field='id',
+        queryset=User.objects.all(),
+    )
+
+    class Meta:
+        model = Calculation
+        fields = '__all__'
+
+
+class FrameSerializer(serializers.Serializer):
+    frame = FrameOpeningsSerializer(many=True)
+    calculation = CalculationPostSerializer()

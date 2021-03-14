@@ -72,6 +72,11 @@ class Calculation(models.Model):
         'Название',
         max_length=255
     )
+    floor = models.IntegerField(
+        verbose_name='Этаж',
+        blank=True,
+        null=True
+    )
     created_date = models.DateField(
         'Дата создания',
         auto_now_add=True
@@ -309,32 +314,26 @@ class StructuralElementFrame(models.Model):
     steam_waterproofing_external_walls = models.CharField(
         verbose_name='Парогидроизоляция',
         max_length=30,
-        default='1'
     )
     steam_waterproofing_base_area = models.CharField(
         verbose_name='Парогидроизоляция',
         max_length=30,
-        default='1'
     )
     windscreen_external_walls = models.CharField(
         verbose_name='Ветрозащита',
         max_length=30,
-        default='1'
     )
     windscreen_base_area = models.CharField(
         verbose_name='Ветрозащита',
         max_length=30,
-        default='1'
     )
     insulation_external_walls = models.CharField(
         verbose_name='Утеплитель',
         max_length=30,
-        default='1'
     )
     insulation_base_area = models.CharField(
         verbose_name='Утеплитель',
         max_length=30,
-        default='1'
     )
     OSB_for_interior_walls = models.CharField(
         verbose_name='ОСБ для внутренних стен',
@@ -343,12 +342,10 @@ class StructuralElementFrame(models.Model):
     OSB_for_external_walls = models.CharField(
         verbose_name='ОСБ для наружных стен',
         max_length=30,
-        default='1'
     )
     OSB_for_base_area = models.CharField(
         verbose_name='ОСБ для потолка и пола',
         max_length=30,
-        default='1'
     )
     step_of_racks = models.DecimalField(
         verbose_name='Шаг стоек',
