@@ -46,7 +46,6 @@ class FrameOpeningsViewSet(mixins.CreateModelMixin, mixins.ListModelMixin,
         )
         frames = serializer.validated_data['frame']
         for data in frames:
-            print(data)
             openings = data['opening']
             frame = StructuralElementFrameSerializer(
                 data=data['frame']
