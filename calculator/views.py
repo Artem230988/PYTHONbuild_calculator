@@ -23,10 +23,16 @@ class CustomersViewSet(viewsets.ModelViewSet):
         serializer.save(manager=manager)
 
 
-class FrameOpeningsViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
+class FrameOpeningsViewSet(mixins.CreateModelMixin, mixins.UpdateModelMixin,
+                           viewsets.GenericViewSet):
     queryset = FrameOpening.objects.all()
     serializer_class = FrameSerializer
-    permission_classes = [permissions.IsAuthenticated, ]
+    http_method_names = ('patch', 'post')
+    permission_classes = (permissions.IsAuthenticated, )
+
+    def get_object(self):
+        id = self.kwargs['pk']
+        return Calculation.objects.get(pk=id)
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -62,6 +68,9 @@ class FrameOpeningsViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
                 opening.save(frame=last_frame)
             calculate_frame(last_frame)
         return calculation.id
+
+    def perform_update(self, serializer):
+        print(serializer)
 
 
 class MaterialsListView(generics.ListAPIView):
