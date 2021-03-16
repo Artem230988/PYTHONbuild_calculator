@@ -26,7 +26,7 @@ class CustomersViewSet(viewsets.ModelViewSet):
 class FrameOpeningsViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     queryset = FrameOpening.objects.all()
     serializer_class = FrameSerializer
-
+    permission_classes = [permissions.IsAuthenticated, ]
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
