@@ -110,3 +110,15 @@ class CalculationPostSerializer(serializers.ModelSerializer):
 class FrameSerializer(serializers.Serializer):
     frame = FrameOpeningsSerializer(many=True)
     calculation = CalculationPostSerializer()
+
+
+class CalculationStateUpdateSerializer(serializers.ModelSerializer):
+    """Сериализатор для изменения статуса расчета"""
+    state_calculation = serializers.SlugRelatedField(
+        slug_field='title',
+        queryset=CalculationState.objects.all(),
+        required=True,)
+
+    class Meta:
+        model = Calculation
+        fields = ('state_calculation', )

@@ -85,3 +85,12 @@ class CalculationDetailView(generics.RetrieveAPIView):
 
     def get_queryset(self):
         return Calculation.objects.filter(manager=self.request.user)
+
+
+class CalculationStateUpdateView(generics.UpdateAPIView):
+    http_method_names = ['patch', ]
+    serializer_class = CalculationStateUpdateSerializer
+    permission_classes = [permissions.IsAuthenticated, ]
+
+    def get_queryset(self):
+        return Calculation.objects.filter(manager=self.request.user)
