@@ -324,38 +324,47 @@ class StructuralElementFrame(models.Model):
     )
     steam_waterproofing_external_walls = models.CharField(
         verbose_name='Парогидроизоляция',
+        help_text='Название материала',
         max_length=30,
     )
     steam_waterproofing_base_area = models.CharField(
         verbose_name='Парогидроизоляция',
+        help_text='Название материала',
         max_length=30,
     )
     windscreen_external_walls = models.CharField(
         verbose_name='Ветрозащита',
+        help_text='Название материала',
         max_length=30,
     )
     windscreen_base_area = models.CharField(
         verbose_name='Ветрозащита',
+        help_text='Название материала',
         max_length=30,
     )
     insulation_external_walls = models.CharField(
         verbose_name='Утеплитель',
+        help_text='Название материала',
         max_length=30,
     )
     insulation_base_area = models.CharField(
         verbose_name='Утеплитель',
+        help_text='Название материала',
         max_length=30,
     )
     OSB_for_interior_walls = models.CharField(
         verbose_name='ОСБ для внутренних стен',
+        help_text='Название материала',
         max_length=30,
     )
     OSB_for_external_walls = models.CharField(
         verbose_name='ОСБ для наружных стен',
+        help_text='Название материала',
         max_length=30,
     )
     OSB_for_base_area = models.CharField(
         verbose_name='ОСБ для потолка и пола',
+        help_text='Название материала',
         max_length=30,
     )
     step_of_racks = models.DecimalField(
@@ -394,6 +403,8 @@ class Opening(models.Model):
     )
     type = models.CharField(
         max_length=50,
+        help_text=('Дверные проемы внутренние, Дверные проемы внешние '
+                   'или Оконные проемы'),
         verbose_name='Тип проема'
     )
     wigth = models.DecimalField(
