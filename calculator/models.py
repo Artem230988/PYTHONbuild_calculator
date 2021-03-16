@@ -21,7 +21,7 @@ class Customers(models.Model):
     )
     phone = models.CharField(
         verbose_name='Телефон',
-        max_length=10
+        max_length=20
     )
     email = models.EmailField(
         verbose_name='E-mail',

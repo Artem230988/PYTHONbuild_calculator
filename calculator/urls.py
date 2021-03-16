@@ -12,7 +12,7 @@ router.register(r'customers',
 # router2.register(r'customers/(?P<customers_id>\d+)/calculation',
 #                  views.CalculationViewSet,
 #                  basename='calculation')
-router.register(r'calculation',
+router.register(r'calculation_frame',
                 views.FrameOpeningsViewSet,
                 basename='frameorderings')
 

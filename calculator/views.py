@@ -21,8 +21,7 @@ class CustomersViewSet(viewsets.ModelViewSet):
         serializer.save(manager=manager)
 
 
-class FrameOpeningsViewSet(mixins.CreateModelMixin, mixins.ListModelMixin,
-                           viewsets.GenericViewSet):
+class FrameOpeningsViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     queryset = FrameOpening.objects.all()
     serializer_class = FrameSerializer
 
