@@ -190,24 +190,28 @@ class SpecificMaterial(models.Model):
     )
     length = models.DecimalField(
         verbose_name='Длина',
+        help_text='мм, если применимо к материалу',
         decimal_places=2,
         max_digits=10,
         blank=True, null=True
     )
     width = models.DecimalField(
         verbose_name='Ширина',
+        help_text='мм, если применимо к материалу',
         decimal_places=2,
         max_digits=10,
         blank=True, null=True
     )
     thickness = models.DecimalField(
         verbose_name='Толщина',
+        help_text='мм, если применимо к материалу',
         decimal_places=2,
         max_digits=10,
         blank=True, null=True
     )
     volume = models.DecimalField(
         verbose_name='Объем',
+        help_text='м3, если применимо к материалу',
         decimal_places=2,
         max_digits=10,
         blank=True, null=True
@@ -278,36 +282,43 @@ class StructuralElementFrame(models.Model):
     )
     perimeter_of_external_walls = models.DecimalField(
         verbose_name='Периметр внешних стен',
+        help_text='ед. измерения - метры (м)',
         decimal_places=2,
         max_digits=10
     )
     base_area = models.DecimalField(
         verbose_name='Площадь основания',
+        help_text='ед. измерения - метры кубические (м2)',
         decimal_places=2,
         max_digits=10
     )
     external_wall_thickness = models.DecimalField(
         verbose_name='Толщина внешних стен',
+        help_text='ед. измерения - миллиметры (мм)',
         decimal_places=2,
         max_digits=10
     )
     internal_wall_length = models.DecimalField(
         verbose_name='Длина внутренних стен',
+        help_text='ед. измерения - метры (м)',
         decimal_places=2,
         max_digits=10
     )
     internal_wall_thickness = models.DecimalField(
         verbose_name='Толщина внутренних стен',
+        help_text='ед. измерения - миллиметры (мм)',
         decimal_places=2,
         max_digits=10
     )
     height_of_one_floor = models.DecimalField(
         verbose_name='Высота одного этажа',
+        help_text='ед. измерения - метры (м)',
         decimal_places=2,
         max_digits=10
     )
     overlap_thickness = models.DecimalField(
         verbose_name='Толщина перекрытия',
+        help_text='ед. измерения - миллиметры (мм)',
         decimal_places=2,
         max_digits=10
     )
@@ -349,6 +360,7 @@ class StructuralElementFrame(models.Model):
     )
     step_of_racks = models.DecimalField(
         verbose_name='Шаг стоек',
+        help_text='ед. измерения - метры (м)',
         decimal_places=2,
         max_digits=10
     )
@@ -386,11 +398,13 @@ class Opening(models.Model):
     )
     wigth = models.DecimalField(
         verbose_name='Ширина',
+        help_text='ед. измерения - метры (м)',
         decimal_places=2,
         max_digits=10
     )
     height = models.DecimalField(
         verbose_name='Высота',
+        help_text='ед. измерения - метры (м)',
         decimal_places=2,
         max_digits=10
     )
