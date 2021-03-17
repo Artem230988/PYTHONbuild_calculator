@@ -21,10 +21,10 @@ class CustomersViewSet(viewsets.ModelViewSet):
         serializer.save(manager=manager)
 
 
-class FrameOpeningsViewSet(mixins.CreateModelMixin, mixins.ListModelMixin,
-                           viewsets.GenericViewSet):
+class FrameOpeningsViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     queryset = FrameOpening.objects.all()
     serializer_class = FrameSerializer
+
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -78,9 +78,18 @@ class CalculationListView(generics.ListAPIView):
         return Calculation.objects.filter(manager=self.request.user)
 
 
-class CalculationDetailView(generics.RetrieveAPIView):
+class CalculationDetailView(generics.RetrieveDestroyAPIView):
     """Расчет детально"""
     serializer_class = CalculationSerializer
+    permission_classes = [permissions.IsAuthenticated, ]
+
+    def get_queryset(self):
+        return Calculation.objects.filter(manager=self.request.user)
+
+
+class CalculationStateUpdateView(generics.UpdateAPIView):
+    http_method_names = ['patch', ]
+    serializer_class = CalculationStateUpdateSerializer
     permission_classes = [permissions.IsAuthenticated, ]
 
     def get_queryset(self):
