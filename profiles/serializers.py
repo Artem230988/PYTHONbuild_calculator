@@ -7,4 +7,4 @@ class UserDetailSerializer(serializers.ModelSerializer):
     """Сериализатор для получении информации о своем профиле."""
     class Meta:
         model = User
-        fields = ('username', 'first_name', 'last_name', 'email', 'photo', 'phone')
+        fields = ('username', 'first_name', 'second_name', 'last_name', 'email', 'photo', 'phone')

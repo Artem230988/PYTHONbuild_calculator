@@ -78,7 +78,7 @@ class CalculationListView(generics.ListAPIView):
         return Calculation.objects.filter(manager=self.request.user)
 
 
-class CalculationDetailView(generics.RetrieveAPIView):
+class CalculationDetailView(generics.RetrieveDestroyAPIView):
     """Расчет детально"""
     serializer_class = CalculationSerializer
     permission_classes = [permissions.IsAuthenticated, ]

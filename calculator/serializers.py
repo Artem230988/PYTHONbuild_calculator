@@ -57,6 +57,9 @@ class CalculationSerializer(serializers.ModelSerializer):
                   'state_calculation', 'results')
 
 
+
+
+
 class OpeningsSerializer(serializers.ModelSerializer):
     """Сериализатор для проемов."""
     frame = serializers.CharField(
