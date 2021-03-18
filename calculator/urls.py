@@ -15,6 +15,9 @@ router.register(r'customers',
 router.register(r'calculation_frame',
                 views.FrameOpeningsViewSet,
                 basename='frameorderings')
+router.register(r'calculation_frame',
+                views.FrameOpeningsPatchViewSet,
+                basename='frameorderings')
 
 urlpatterns = [
     path('', include(router.urls)),

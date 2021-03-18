@@ -23,16 +23,10 @@ class CustomersViewSet(viewsets.ModelViewSet):
         serializer.save(manager=manager)
 
 
-class FrameOpeningsViewSet(mixins.CreateModelMixin, mixins.UpdateModelMixin,
-                           viewsets.GenericViewSet):
+class FrameOpeningsViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     queryset = FrameOpening.objects.all()
     serializer_class = FrameSerializer
-    http_method_names = ('patch', 'post')
     permission_classes = (permissions.IsAuthenticated, )
-
-    def get_object(self):
-        id = self.kwargs['pk']
-        return Calculation.objects.get(pk=id)
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -52,7 +46,7 @@ class FrameOpeningsViewSet(mixins.CreateModelMixin, mixins.UpdateModelMixin,
             adress_object_construction=adress_object_construction,
             manager=self.request.user
         )
-        frames = serializer.validated_data['frame']
+        frames = serializer.validated_data['frames']
         for data in frames:
             openings = data['opening']
             frame = StructuralElementFrameSerializer(
@@ -69,8 +63,40 @@ class FrameOpeningsViewSet(mixins.CreateModelMixin, mixins.UpdateModelMixin,
             calculate_frame(last_frame)
         return calculation.id
 
+
+class FrameOpeningsPatchViewSet(mixins.UpdateModelMixin,
+                                viewsets.GenericViewSet):
+    queryset = FrameOpening.objects.all()
+    serializer_class = FramePatchSerializer
+    http_method_names = ('patch', )
+    permission_classes = (permissions.IsAuthenticated, )
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        serializer = self.get_serializer(data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+
     def perform_update(self, serializer):
-        print(serializer)
+        frames = serializer.validated_data['frames']
+        for data in frames:
+            frame_id = data['frame']['id']
+            openings = data['opening']
+            frame = StructuralElementFrameSerializer(
+                instance=frame_id,
+                data=data['frame']
+            )
+            frame.is_valid()
+            frame.save()
+            for opening in openings:
+                opening_id = Opening.objects.get(type=opening['type'],
+                                                 frame=frame_id)
+                opening = OpeningsSerializer(instance=opening_id,
+                                             data=opening)
+                opening.is_valid()
+                opening.save()
+            # calculate_frame(frame_id)
 
 
 class MaterialsListView(generics.ListAPIView):
