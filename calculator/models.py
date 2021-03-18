@@ -398,7 +398,7 @@ class Opening(models.Model):
     frame = models.ForeignKey(
         StructuralElementFrame,
         verbose_name='каркас',
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         related_name='frame',
     )
     type = models.CharField(
@@ -428,7 +428,7 @@ class Opening(models.Model):
         verbose_name_plural = 'Проемы'
 
     def __str__(self):
-        return f'{self.type} Ш{self.height}В{self.height} кол-во{self.count}'
+        return f'{self.type} Ш{self.height}*В{self.height} кол-во {self.count}'
 
 
 class StructuralElementFoundation(models.Model):

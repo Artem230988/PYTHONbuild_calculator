@@ -59,30 +59,25 @@ class CalculationSerializer(serializers.ModelSerializer):
 
 class OpeningsSerializer(serializers.ModelSerializer):
     """Сериализатор для проемов."""
-    frame = serializers.CharField(
-        read_only=True
-    )
 
     class Meta:
         model = Opening
-        fields = '__all__'
+        fields = ('type', 'wigth', 'height', 'count')
 
 
 class StructuralElementFrameSerializer(serializers.ModelSerializer):
     """Сериализатор для рассчетов."""
+    step_of_racks = serializers.DecimalField(max_digits=10, decimal_places=2,
+                                             default=0.6)
 
     class Meta:
         model = StructuralElementFrame
         exclude = ('calculations',)
 
 
-class FrameOpeningsSerializer(serializers.ModelSerializer):
+class FrameOpeningsSerializer(serializers.Serializer):
     frame = StructuralElementFrameSerializer()
     opening = OpeningsSerializer(many=True)
-
-    class Meta:
-        model = FrameOpening
-        fields = '__all__'
 
 
 class CalculationPostSerializer(serializers.ModelSerializer):
@@ -108,7 +103,7 @@ class CalculationPostSerializer(serializers.ModelSerializer):
 
 
 class FrameSerializer(serializers.Serializer):
-    frame = FrameOpeningsSerializer(many=True)
+    frames = FrameOpeningsSerializer(many=True)
     calculation = CalculationPostSerializer()
 
 
@@ -117,11 +112,60 @@ class CalculationStateUpdateSerializer(serializers.ModelSerializer):
     state_calculation = serializers.SlugRelatedField(
         slug_field='title',
         queryset=CalculationState.objects.all(),
-        required=True,)
+        required=True,
+    )
 
     class Meta:
         model = Calculation
         fields = ('state_calculation', )
+
+
+class OpeningsPatchSerializer(serializers.ModelSerializer):
+    """Сериализатор для проемов."""
+
+    class Meta:
+        model = Opening
+        fields = ('type', 'wigth', 'height', 'count')
+
+
+class StructuralElementFramePatchSerializer(serializers.ModelSerializer):
+    """Сериализатор для рассчетов."""
+    id = serializers.SlugRelatedField(
+        slug_field='pk',
+        queryset=StructuralElementFrame.objects.all(),
+        required=True,
+    )
+    step_of_racks = serializers.DecimalField(max_digits=10, decimal_places=2,
+                                             default=0.6)
+
+    class Meta:
+        model = StructuralElementFrame
+        exclude = ('calculations',)
+
+
+class FrameOpeningsPatchSerializer(serializers.ModelSerializer):
+    frame = StructuralElementFramePatchSerializer()
+    opening = OpeningsPatchSerializer(many=True)
+
+    class Meta:
+        model = FrameOpening
+        fields = ('frame', 'opening')
+
+
+class FramePatchSerializer(serializers.Serializer):
+    frames = FrameOpeningsPatchSerializer(many=True)
+
+    def validate(self, attrs):
+        frames = attrs['frames']
+        pk = self.context.get('view').kwargs.get('pk')
+        calculation = Calculation.objects.get(pk=pk)
+        for data in frames:
+            frame = data['frame']['id']
+            if frame.calculations != calculation:
+                raise serializers.ValidationError(
+                    'Данный каркас принадлежит другому расчету'
+                )
+        return attrs
 
 
 class StructuralElementFoundationSerializer(serializers.ModelSerializer):
