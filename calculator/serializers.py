@@ -69,7 +69,6 @@ class StructuralElementFrameSerializer(serializers.ModelSerializer):
     """Сериализатор для рассчетов."""
     step_of_racks = serializers.DecimalField(max_digits=10, decimal_places=2,
                                              default=0.6)
-    openings = OpeningsSerializer(many=True)
 
     class Meta:
         model = StructuralElementFrame

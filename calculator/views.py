@@ -1,5 +1,6 @@
 from django.shortcuts import redirect
-from rest_framework import viewsets, mixins, generics, permissions
+from rest_framework import viewsets, mixins, generics, permissions, status
+from rest_framework.response import Response
 
 from .calculate_frame import calculate_frame
 from .serializers import *
@@ -21,17 +22,11 @@ class CustomersViewSet(viewsets.ModelViewSet):
         serializer.save(manager=manager)
 
 
-class FrameOpeningsViewSet(mixins.CreateModelMixin, mixins.UpdateModelMixin,
-                           viewsets.GenericViewSet):
+class FrameOpeningsViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     queryset = FrameOpening.objects.all()
     serializer_class = FrameSerializer
     permission_classes = (permissions.IsAuthenticated, )
     http_method_names = ('patch', 'post')
-    permission_classes = (permissions.IsAuthenticated, )
-
-    def get_object(self):
-        id = self.kwargs['pk']
-        return Calculation.objects.get(pk=id)
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -67,9 +62,6 @@ class FrameOpeningsViewSet(mixins.CreateModelMixin, mixins.UpdateModelMixin,
                 opening.save(frame=last_frame)
             calculate_frame(last_frame)
         return calculation.id
-
-    def perform_update(self, serializer):
-        print(serializer)
 
 
 class FrameOpeningsPatchViewSet(mixins.UpdateModelMixin,
@@ -134,7 +126,7 @@ class CalculationDetailView(generics.RetrieveDestroyAPIView):
 
 class CalculationStateUpdateView(generics.UpdateAPIView):
     """Обновление статуса расчета"""
-    http_method_names = ['patch', ]
+    http_method_names = ('patch', )
     serializer_class = CalculationStateUpdateSerializer
     permission_classes = [permissions.IsAuthenticated, ]
 
