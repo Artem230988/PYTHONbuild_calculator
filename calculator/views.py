@@ -1,6 +1,6 @@
-from django.shortcuts import redirect, get_object_or_404
-from requests import Response
+from django.shortcuts import redirect
 from rest_framework import viewsets, mixins, generics, permissions, status
+from rest_framework.response import Response
 
 from .calculate_frame import calculate_frame
 from .calculate_foundation import calculate_foundation
@@ -96,7 +96,7 @@ class FrameOpeningsPatchViewSet(mixins.UpdateModelMixin,
                                              data=opening)
                 opening.is_valid()
                 opening.save()
-            # calculate_frame(frame_id)
+            calculate_frame(frame_id)
 
 
 class MaterialsListView(generics.ListAPIView):
@@ -167,8 +167,15 @@ class StructuralElementFoundationUpdate(generics.UpdateAPIView):
         serializer.save()
 
 
-# class CalcUpdate(generics.UpdateAPIView):
-#     """Обновление любого расчета"""
-#     http_method_names = ['patch', ]
-#     queryset = Calculation.objects.all()
-#     serializer_class = CalcUpdateSerializer
+class CalcUpdate(generics.UpdateAPIView):
+    """Обновление любого расчета"""
+    http_method_names = ['patch', ]
+    queryset = Calculation.objects.all()
+    serializer_class = CalcUpdateSerializer
+
+    def perform_update(self, serializer):
+        keys = serializer.validated_data.keys()
+        if 'structural_element_foundation' in keys:
+            print("Артем")
+        if 'structural_element_frame' in keys:
+            print("Паша")
