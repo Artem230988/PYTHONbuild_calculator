@@ -25,7 +25,7 @@ urlpatterns = [
     path('calculation_foundation/', StructuralElementFoundationCreate.as_view(), name='calculation_foundation_create'),
     path('calculation_foundation/<int:pk>', StructuralElementFoundationUpdate.as_view(), name='calculation_foundation_update'),
 
-    # path('calc_update', CalcUpdate.as_view()),
+    path('calc_update/<int:pk>', CalcUpdate.as_view()),
 
     path('materials/', MaterialsListView.as_view(), name='materials'),
     path('calculation/', CalculationListView.as_view(), name='calculation_list'),

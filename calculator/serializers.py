@@ -69,6 +69,7 @@ class StructuralElementFrameSerializer(serializers.ModelSerializer):
     """Сериализатор для рассчетов."""
     step_of_racks = serializers.DecimalField(max_digits=10, decimal_places=2,
                                              default=0.6)
+    openings = OpeningsSerializer(many=True)
 
     class Meta:
         model = StructuralElementFrame
@@ -104,7 +105,6 @@ class CalculationPostSerializer(serializers.ModelSerializer):
 
 class FrameSerializer(serializers.Serializer):
     frames = FrameOpeningsSerializer(many=True)
-    calculation = CalculationPostSerializer()
 
 
 class CalculationStateUpdateSerializer(serializers.ModelSerializer):
@@ -191,4 +191,4 @@ class CalcUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Calculation
-        fields = '__all__'
+        fields = ('structural_element_foundation', 'structural_element_frame')
