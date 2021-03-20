@@ -274,7 +274,7 @@ class StructuralElementFrame(models.Model):
     calculations = models.ForeignKey(
         'Calculation',
         verbose_name='Расчет',
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         related_name='structural_element_frame',
     )
     number_of_floors = models.IntegerField(
@@ -282,6 +282,7 @@ class StructuralElementFrame(models.Model):
     )
     perimeter_of_external_walls = models.DecimalField(
         verbose_name='Периметр внешних стен',
+        help_text='ед. измерения - метры (м)',
         decimal_places=2,
         max_digits=10
     )
@@ -383,12 +384,12 @@ class FrameOpening(models.Model):
     frame = models.ForeignKey(
         StructuralElementFrame,
         verbose_name='каркас',
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
     )
     opening = models.ForeignKey(
         'Opening',
         verbose_name='проем',
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
     )
 
 
@@ -435,7 +436,7 @@ class StructuralElementFoundation(models.Model):
     calculation = models.ForeignKey(
         'Calculation',
         verbose_name='Расчет',
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         related_name='structural_element_foundation',
     )
     perimeter_of_external_walls = models.DecimalField(

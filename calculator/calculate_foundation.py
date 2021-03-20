@@ -2,7 +2,6 @@ import math
 
 from django.shortcuts import get_object_or_404
 from .models import *
-from decimal import Decimal
 
 
 def calculate_foundation(data, calculation_id):

@@ -1,7 +1,7 @@
+from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import serializers
 
 from .models import *
-
 
 User = get_user_model()
 
@@ -17,13 +17,14 @@ class CustomersSerializer(serializers.ModelSerializer):
     class Meta:
         model = Customers
         fields = ('id', 'last_name', 'first_name', 'second_name',
-                  'phone', 'email', 'adress', 'manager', )
+                  'phone', 'email', 'adress', 'manager',)
 
 
 class SpecificMaterialSerializer(serializers.ModelSerializer):
     """Сериализатор для конкретного материала."""
     material = serializers.CharField(source='material.name')
-    measurement_unit = serializers.CharField(source='measurement_unit.measurement_unit')
+    measurement_unit = serializers.CharField(
+        source='measurement_unit.measurement_unit')
 
     class Meta:
         model = SpecificMaterial
@@ -37,7 +38,7 @@ class ResultSerializer(serializers.ModelSerializer):
     class Meta:
         model = Result
         fields = ('name', 'specific_material', 'amount',
-                  'price', 'full_price')
+                  'price', 'full_price', 'floor')
 
 
 class CalculationSerializer(serializers.ModelSerializer):
@@ -55,30 +56,6 @@ class CalculationSerializer(serializers.ModelSerializer):
         fields = ('id', 'title', 'manager', 'customer',
                   'adress_object_construction', 'created_date',
                   'state_calculation', 'results')
-
-
-class OpeningsSerializer(serializers.ModelSerializer):
-    """Сериализатор для проемов."""
-
-    class Meta:
-        model = Opening
-        fields = ('type', 'wigth', 'height', 'count')
-
-
-class StructuralElementFrameSerializer(serializers.ModelSerializer):
-    """Сериализатор для рассчетов."""
-    step_of_racks = serializers.DecimalField(max_digits=10, decimal_places=2,
-                                             default=0.6)
-    openings = OpeningsSerializer(many=True)
-
-    class Meta:
-        model = StructuralElementFrame
-        exclude = ('calculations',)
-
-
-class FrameOpeningsSerializer(serializers.Serializer):
-    frame = StructuralElementFrameSerializer()
-    opening = OpeningsSerializer(many=True)
 
 
 class CalculationPostSerializer(serializers.ModelSerializer):
@@ -103,6 +80,32 @@ class CalculationPostSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class OpeningsSerializer(serializers.ModelSerializer):
+    """Сериализатор для проемов."""
+
+    class Meta:
+        model = Opening
+        fields = ('type', 'wigth', 'height', 'count')
+
+
+class StructuralElementFrameSerializer(serializers.ModelSerializer):
+    """Сериализатор для рассчетов."""
+    step_of_racks = serializers.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=0.6
+    )
+
+    class Meta:
+        model = StructuralElementFrame
+        exclude = ('calculations',)
+
+
+class FrameOpeningsSerializer(serializers.Serializer):
+    frame = StructuralElementFrameSerializer()
+    openings = OpeningsSerializer(many=True)
+
+
 class FrameSerializer(serializers.Serializer):
     frames = FrameOpeningsSerializer(many=True)
     calculation = CalculationPostSerializer()
@@ -110,6 +113,7 @@ class FrameSerializer(serializers.Serializer):
 
 class CalculationStateUpdateSerializer(serializers.ModelSerializer):
     """Сериализатор для изменения статуса расчета"""
+    results = ResultSerializer(many=True)
     state_calculation = serializers.SlugRelatedField(
         slug_field='title',
         queryset=CalculationState.objects.all(),
@@ -118,7 +122,7 @@ class CalculationStateUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Calculation
-        fields = ('state_calculation', )
+        fields = ('state_calculation', 'results')
 
 
 class OpeningsPatchSerializer(serializers.ModelSerializer):
@@ -180,15 +184,45 @@ class StructuralElementFoundationSerializer(serializers.ModelSerializer):
 
 class StructuralElementFoundationUpdateSerializer(serializers.ModelSerializer):
     """Сериализатор для фундамента"""
+
     class Meta:
         model = StructuralElementFoundation
         exclude = ('calculation',)
 
 
+class CalcPostSerializer(serializers.ModelSerializer):
+    """Сериализатор для создания нового Расчета."""
+    structural_element_foundation = StructuralElementFoundationUpdateSerializer(required=True)
+    structural_element_frame = FrameOpeningsSerializer(many=True, required=True)
+    calculation = CalculationPostSerializer()
+
+    class Meta:
+        model = Calculation
+        fields = ('structural_element_foundation', 'structural_element_frame',
+                  'calculation')
+
+
 class CalcUpdateSerializer(serializers.ModelSerializer):
-    """Сериализатор для всего"""
-    structural_element_foundation = StructuralElementFoundationUpdateSerializer(many=True, required=True)
-    structural_element_frame = StructuralElementFrameSerializer(many=True, required=True)
+    """Сериализатор для Update Расчета."""
+    structural_element_foundation = StructuralElementFoundationUpdateSerializer(required=True)
+    structural_element_frame = FrameOpeningsPatchSerializer(many=True, required=True)
+
+    def validate(self, attrs):
+        frames = attrs['structural_element_frame']
+        pk = self.context.get('view').kwargs.get('pk')
+        calculation = Calculation.objects.get(pk=pk)
+        for data in frames:
+            floor = data['frame']['number_of_floors']
+            try:
+                frame_unit = StructuralElementFrame.objects.get(
+                    calculations=calculation,
+                    number_of_floors=floor
+                )
+            except ObjectDoesNotExist:
+                raise serializers.ValidationError(
+                    f'У этого расчета нет этажа {floor}'
+                )
+        return attrs
 
     class Meta:
         model = Calculation
