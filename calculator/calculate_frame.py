@@ -151,6 +151,13 @@ def calculate_frame(frame):
             square_insulation_base_area * thickness_insulation_base_area
     )
 
+    results = Result.objects.filter(
+        calculation=frame.calculations,
+        floor=frame.number_of_floors
+    )
+    for i in results:
+        i.delete()
+
     name_all = [
         external_walls,
         internal_walls,
