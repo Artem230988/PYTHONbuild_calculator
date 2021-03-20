@@ -105,6 +105,7 @@ class CalculationPostSerializer(serializers.ModelSerializer):
 
 class FrameSerializer(serializers.Serializer):
     frames = FrameOpeningsSerializer(many=True)
+    calculation = CalculationPostSerializer()
 
 
 class CalculationStateUpdateSerializer(serializers.ModelSerializer):

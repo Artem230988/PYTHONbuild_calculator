@@ -282,7 +282,6 @@ class StructuralElementFrame(models.Model):
     )
     perimeter_of_external_walls = models.DecimalField(
         verbose_name='Периметр внешних стен',
-        help_text='ед. измерения - метры (м)',
         decimal_places=2,
         max_digits=10
     )
