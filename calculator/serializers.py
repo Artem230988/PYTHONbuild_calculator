@@ -57,9 +57,6 @@ class CalculationSerializer(serializers.ModelSerializer):
                   'state_calculation', 'results')
 
 
-
-
-
 class OpeningsSerializer(serializers.ModelSerializer):
     """Сериализатор для проемов."""
     frame = serializers.CharField(
@@ -125,3 +122,29 @@ class CalculationStateUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Calculation
         fields = ('state_calculation', )
+
+
+class StructuralElementFoundationSerializer(serializers.ModelSerializer):
+    """Сериализатор для фундамента"""
+    calculation = CalculationPostSerializer()
+
+    class Meta:
+        model = StructuralElementFoundation
+        fields = '__all__'
+
+
+class StructuralElementFoundationUpdateSerializer(serializers.ModelSerializer):
+    """Сериализатор для фундамента"""
+    class Meta:
+        model = StructuralElementFoundation
+        exclude = ('calculation',)
+
+
+class CalcUpdateSerializer(serializers.ModelSerializer):
+    """Сериализатор для всего"""
+    structural_element_foundation = StructuralElementFoundationUpdateSerializer(many=True, required=True)
+    structural_element_frame = StructuralElementFrameSerializer(many=True, required=True)
+
+    class Meta:
+        model = Calculation
+        fields = '__all__'
