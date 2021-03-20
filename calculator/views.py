@@ -1,7 +1,9 @@
-from django.shortcuts import redirect
-from rest_framework import viewsets, mixins, generics, permissions
+from django.shortcuts import redirect, get_object_or_404
+from requests import Response
+from rest_framework import viewsets, mixins, generics, permissions, status
 
 from .calculate_frame import calculate_frame
+from .calculate_foundation import calculate_foundation
 from .serializers import *
 from .models import *
 
@@ -88,9 +90,50 @@ class CalculationDetailView(generics.RetrieveDestroyAPIView):
 
 
 class CalculationStateUpdateView(generics.UpdateAPIView):
+    """Обновление статуса расчета"""
     http_method_names = ['patch', ]
     serializer_class = CalculationStateUpdateSerializer
     permission_classes = [permissions.IsAuthenticated, ]
 
     def get_queryset(self):
         return Calculation.objects.filter(manager=self.request.user)
+
+
+class StructuralElementFoundationCreate(generics.CreateAPIView):
+    """Создание элемента фундамента"""
+    queryset = StructuralElementFoundation.objects.all()
+    serializer_class = StructuralElementFoundationSerializer
+
+    def perform_create(self, serializer, *args, **kwargs):
+        data = serializer.validated_data['calculation']
+        calculation = Calculation.objects.create(**data)
+
+        calculate_foundation(serializer.validated_data, calculation.id)
+
+        serializer.save(calculation=calculation)
+        return calculation.id
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        id = self.perform_create(serializer)
+        return redirect('calculation_detail', pk=id)
+
+
+class StructuralElementFoundationUpdate(generics.UpdateAPIView):
+    """Создание элемента фундамента"""
+    queryset = Calculation.objects.all()
+    serializer_class = CalcUpdateSerializer
+
+    def perform_update(self, serializer, *args, **kwargs):
+        print(self.kwargs['pk'], '+++++++++++')
+        obj = StructuralElementFoundation.objects.get(pk=self.kwargs['pk'])
+        print(obj.calculation, '++++++++++++++++')
+        serializer.save()
+
+
+# class CalcUpdate(generics.UpdateAPIView):
+#     """Обновление любого расчета"""
+#     http_method_names = ['patch', ]
+#     queryset = Calculation.objects.all()
+#     serializer_class = CalcUpdateSerializer

@@ -19,6 +19,11 @@ router.register(r'calculation_frame',
 urlpatterns = [
     path('', include(router.urls)),
 
+    path('calculation_foundation/', StructuralElementFoundationCreate.as_view(), name='calculation_foundation_create'),
+    path('calculation_foundation/<int:pk>', StructuralElementFoundationUpdate.as_view(), name='calculation_foundation_update'),
+
+    # path('calc_update', CalcUpdate.as_view()),
+
     path('materials/', MaterialsListView.as_view(), name='materials'),
     path('calculation/', CalculationListView.as_view(), name='calculation_list'),
     path('calculation/<int:pk>', CalculationDetailView.as_view(), name='calculation_detail'),

@@ -404,3 +404,20 @@ class Opening(models.Model):
 
     def __str__(self):
         return f'{self.type} Ш{self.height}В{self.height} кол-во{self.count}'
+
+
+class StructuralElementFoundation(models.Model):
+    """Конструктивный элемент фундамент."""
+    calculation = models.ForeignKey('Calculation', verbose_name='Расчет', on_delete=models.PROTECT,
+                                     related_name='structural_element_foundation',)
+    perimeter_of_external_walls = models.DecimalField(verbose_name='Периметр внешних стен', decimal_places=2,
+                                                      max_digits=10)
+    internal_wall_length = models.DecimalField(verbose_name='Длина внутренних стен', decimal_places=2, max_digits=10)
+    concrete_pile = models.CharField(verbose_name='Бетонная свая', max_length=100)
+    concrete = models.CharField(verbose_name='Бетон', max_length=100)
+
+    class Meta:
+        verbose_name = 'Конструктивный элемент фундамент'
+        verbose_name_plural = 'Конструктивный элемент фундамент'
+
+
