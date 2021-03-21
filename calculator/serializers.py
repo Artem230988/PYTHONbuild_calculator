@@ -6,6 +6,16 @@ from .models import *
 User = get_user_model()
 
 
+class CalculationCustomerSerializer(serializers.ModelSerializer):
+    """Сериализатор для расчетов."""
+
+    class Meta:
+        model = Calculation
+        fields = ('id', 'title',
+                  'adress_object_construction', 'created_date',
+                  'state_calculation')
+
+
 class CustomersSerializer(serializers.ModelSerializer):
     """Сериализатор для заказчиков."""
     manager = serializers.SlugRelatedField(
@@ -13,11 +23,12 @@ class CustomersSerializer(serializers.ModelSerializer):
         read_only=True,
         default=serializers.CurrentUserDefault()
     )
+    calculation = CalculationCustomerSerializer(many=True, read_only=True)
 
     class Meta:
         model = Customers
         fields = ('id', 'last_name', 'first_name', 'second_name',
-                  'phone', 'email', 'adress', 'manager',)
+                  'phone', 'email', 'adress', 'manager', 'calculation')
 
 
 class SpecificMaterialSerializer(serializers.ModelSerializer):
@@ -49,7 +60,11 @@ class CalculationSerializer(serializers.ModelSerializer):
         read_only=True,
         default=serializers.CurrentUserDefault()
     )
-    customer = CustomersSerializer()
+    customer = serializers.SlugRelatedField(
+        slug_field='pk',
+        queryset=Customers.objects.all(),
+        required=True,
+    )
 
     class Meta:
         model = Calculation
@@ -135,11 +150,6 @@ class OpeningsPatchSerializer(serializers.ModelSerializer):
 
 class StructuralElementFramePatchSerializer(serializers.ModelSerializer):
     """Сериализатор для рассчетов."""
-    id = serializers.SlugRelatedField(
-        slug_field='pk',
-        queryset=StructuralElementFrame.objects.all(),
-        required=True,
-    )
     step_of_racks = serializers.DecimalField(max_digits=10, decimal_places=2,
                                              default=0.6)
 
@@ -182,6 +192,15 @@ class StructuralElementFoundationSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class StructuralElementFoundationPostSerializer(serializers.ModelSerializer):
+    """Сериализатор для фундамента"""
+
+    class Meta:
+        model = StructuralElementFoundation
+        fields = ('perimeter_of_external_walls', 'internal_wall_length',
+                  'concrete_pile', 'concrete')
+
+
 class StructuralElementFoundationUpdateSerializer(serializers.ModelSerializer):
     """Сериализатор для фундамента"""
 
@@ -204,26 +223,36 @@ class CalcPostSerializer(serializers.ModelSerializer):
 
 class CalcUpdateSerializer(serializers.ModelSerializer):
     """Сериализатор для Update Расчета."""
-    structural_element_foundation = StructuralElementFoundationUpdateSerializer(required=True)
-    structural_element_frame = FrameOpeningsPatchSerializer(many=True, required=True)
+    structural_element_foundation = StructuralElementFoundationUpdateSerializer(
+        required=True)
+    structural_element_frame = FrameOpeningsPatchSerializer(many=True,
+                                                            required=True)
 
     def validate(self, attrs):
-        frames = attrs['structural_element_frame']
-        pk = self.context.get('view').kwargs.get('pk')
-        calculation = Calculation.objects.get(pk=pk)
-        for data in frames:
-            floor = data['frame']['number_of_floors']
-            try:
-                frame_unit = StructuralElementFrame.objects.get(
-                    calculations=calculation,
-                    number_of_floors=floor
-                )
-            except ObjectDoesNotExist:
-                raise serializers.ValidationError(
-                    f'У этого расчета нет этажа {floor}'
-                )
+        if 'structural_element_frame' in attrs.keys():
+            frames = attrs['structural_element_frame']
+            pk = self.context.get('view').kwargs.get('pk')
+            calculation = Calculation.objects.get(pk=pk)
+            for data in frames:
+                floor = data['frame']['number_of_floors']
+
+                try:
+                    frame_unit = StructuralElementFrame.objects.get(
+                        calculations=calculation,
+                        number_of_floors=floor
+                    )
+                except ObjectDoesNotExist:
+                    raise serializers.ValidationError(
+                        f'У этого расчета нет этажа {floor}'
+                    )
         return attrs
 
     class Meta:
         model = Calculation
         fields = ('structural_element_foundation', 'structural_element_frame')
+
+
+
+
+
+

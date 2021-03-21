@@ -168,7 +168,7 @@ class CalcPostViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     permission_classes = (permissions.IsAuthenticated,)
 
     def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
+        serializer = self.get_serializer(data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         id = self.perform_create(serializer)
         return redirect('calculation_detail', pk=id)
@@ -179,13 +179,14 @@ class CalcPostViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
         keys = serializer.validated_data.keys()
         if 'structural_element_foundation' in keys:
             foundation_data = serializer.validated_data['structural_element_foundation']
-            foundation = StructuralElementFoundationSerializer(
+            foundation = StructuralElementFoundationPostSerializer(
                 data=foundation_data
             )
             foundation.is_valid()
-            print(foundation.validated_data)
-            calculate_foundation(foundation.validated_data, calculation.id)
             foundation.save(calculation=calculation)
+            foundation = StructuralElementFoundation.objects.all()
+            last_foundation = foundation[len(foundation) - 1]
+            calculate_foundation(last_foundation, calculation.id)
         if 'structural_element_frame' in keys:
             frames = serializer.validated_data['structural_element_frame']
             for data in frames:
@@ -224,7 +225,16 @@ class CalcUpdate(generics.UpdateAPIView):
         pk = self.kwargs['pk']
         calculate = Calculation.objects.get(pk=pk)
         if 'structural_element_foundation' in keys:
-            print("Артем")
+            data = serializer.validated_data['structural_element_foundation']
+            found = StructuralElementFoundation.objects.get(calculation=calculate)
+            foundation = StructuralElementFoundationPostSerializer(
+                instance=found,
+                data=data,
+                partial=True
+            )
+            foundation.is_valid()
+            foundation.save()
+            calculate_foundation(found, pk)
         if 'structural_element_frame' in keys:
             frames = serializer.validated_data['structural_element_frame']
             for data in frames:
@@ -249,7 +259,8 @@ class CalcUpdate(generics.UpdateAPIView):
                         )
                         opening = OpeningsSerializer(
                             instance=opening_id,
-                            data=opening
+                            data=opening,
+                            partial=True
                         )
                         opening.is_valid()
                         opening.save()
