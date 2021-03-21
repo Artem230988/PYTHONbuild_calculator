@@ -6,10 +6,16 @@ from .models import *
 
 def calculate_foundation(data, calculation_id):
     """Внесение в таблицы результаты данных по фундаменту"""
-    perimeter_of_external_walls = data['perimeter_of_external_walls']
-    internal_wall_length = data['internal_wall_length']
-    concrete_pile = data['concrete_pile']
-    concrete = data['concrete']
+    perimeter_of_external_walls = data.perimeter_of_external_walls
+    internal_wall_length = data.internal_wall_length
+    concrete_pile = data.concrete_pile
+    concrete = data.concrete
+
+    results = Result.objects.filter(
+        calculation=calculation_id,
+    )
+    for i in results:
+        i.delete()
 
     """Результат для количества бетонных свай"""
     Result.objects.create(
