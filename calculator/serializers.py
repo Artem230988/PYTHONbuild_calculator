@@ -202,9 +202,3 @@ class CalcUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Calculation
         fields = ('structural_element_foundation', 'structural_element_frame')
-
-
-
-
-
-
