@@ -184,6 +184,7 @@ def calculate_frame(frame):
                 SpecificMaterial,
                 material=material_plank,
                 width=thickness[i],
+                thickness=THICKNESS_PLANKS * MM_IN_METER,
                 length=LENS_PLANKS_WALLS * MM_IN_METER
             )
         else:
@@ -191,6 +192,7 @@ def calculate_frame(frame):
                 SpecificMaterial,
                 material=material_plank,
                 width=thickness[i],
+                thickness=THICKNESS_PLANKS * MM_IN_METER,
                 length=LENS_PLANKS_BASE_AREA * MM_IN_METER
             )
         price_list_planks = PriceList.objects.filter(

@@ -20,7 +20,9 @@ class CustomersViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         manager = self.request.user.id
-        return Customers.objects.filter(manager=manager)
+        return Customers.objects.filter(manager=manager).select_related(
+            'manager',
+        )
 
     def perform_create(self, serializer, *args, **kwargs):
         manager = self.request.user
@@ -29,7 +31,9 @@ class CustomersViewSet(viewsets.ModelViewSet):
 
 class MaterialsListView(generics.ListAPIView):
     """Список всех материалов"""
-    queryset = SpecificMaterial.objects.all()
+    queryset = SpecificMaterial.objects.select_related(
+            'material', 'measurement_unit'
+    ).all()
     serializer_class = SpecificMaterialSerializer
     permission_classes = (permissions.IsAuthenticated, )
 
@@ -40,7 +44,13 @@ class CalculationListView(generics.ListAPIView):
     permission_classes = (permissions.IsAuthenticated, )
 
     def get_queryset(self):
-        return Calculation.objects.filter(manager=self.request.user)
+        return Calculation.objects.select_related(
+            'manager', 'customer', 'state_calculation'
+        ).filter(manager=self.request.user).prefetch_related(
+            'results', 'results__specific_material', 'results__price',
+            'results__specific_material__material',
+            'results__specific_material__measurement_unit',
+        )
 
 
 class CalculationDetailView(generics.RetrieveUpdateDestroyAPIView):
@@ -50,7 +60,13 @@ class CalculationDetailView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (permissions.IsAuthenticated, )
 
     def get_queryset(self):
-        return Calculation.objects.filter(manager=self.request.user)
+        return Calculation.objects.select_related(
+            'manager', 'customer', 'state_calculation'
+        ).filter(manager=self.request.user).prefetch_related(
+            'results', 'results__specific_material', 'results__price',
+            'results__specific_material__material',
+            'results__specific_material__measurement_unit',
+        )
 
 
 class CalculationStateUpdateView(generics.UpdateAPIView):
