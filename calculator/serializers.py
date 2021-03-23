@@ -77,14 +77,10 @@ class CalculationPostSerializer(serializers.ModelSerializer):
         queryset=CalculationState.objects.all(),
         required=True,
     )
-    manager = serializers.SlugRelatedField(
-        slug_field='id',
-        queryset=User.objects.all(),
-    )
 
     class Meta:
         model = Calculation
-        fields = ('manager', 'customer', 'adress_object_construction',
+        fields = ('customer', 'adress_object_construction',
                   'title', 'state_calculation')
 
 

@@ -1,7 +1,6 @@
 from django.shortcuts import redirect
 from rest_framework import viewsets, mixins, generics, permissions
 
-from .calculate_foundation import calculate_foundation
 from .calculate_frame import calculate_frame
 from .calculate_foundation import calculate_foundation
 from .serializers import *
@@ -93,7 +92,8 @@ class CalcPostViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
 
     def perform_create(self, serializer):
         calculation_data = serializer.validated_data['calculation']
-        calculation = Calculation.objects.create(**calculation_data)
+        calculation = Calculation.objects.create(**calculation_data,
+                                                 manager=self.request.user)
         keys = serializer.validated_data.keys()
         if 'structural_element_foundation' in keys:
             foundation_data = serializer.validated_data[
