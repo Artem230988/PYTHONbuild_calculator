@@ -65,27 +65,6 @@ class ResultSerializer(serializers.ModelSerializer):
                   'price', 'full_price', 'floor')
 
 
-class CalculationSerializer(serializers.ModelSerializer):
-    """Сериализатор для расчетов."""
-    results = ResultSerializer(many=True)
-    manager = serializers.SlugRelatedField(
-        slug_field='username',
-        read_only=True,
-        default=serializers.CurrentUserDefault()
-    )
-    customer = serializers.SlugRelatedField(
-        slug_field='pk',
-        queryset=Customers.objects.all(),
-        required=True,
-    )
-
-    class Meta:
-        model = Calculation
-        fields = ('id', 'title', 'manager', 'customer',
-                  'adress_object_construction', 'created_date',
-                  'state_calculation', 'results')
-
-
 class CalculationPostSerializer(serializers.ModelSerializer):
     """Сериализатор для расчетов."""
     customer = serializers.SlugRelatedField(
@@ -98,14 +77,10 @@ class CalculationPostSerializer(serializers.ModelSerializer):
         queryset=CalculationState.objects.all(),
         required=True,
     )
-    manager = serializers.SlugRelatedField(
-        slug_field='id',
-        queryset=User.objects.all(),
-    )
 
     class Meta:
         model = Calculation
-        fields = ('manager', 'customer', 'adress_object_construction',
+        fields = ('customer', 'adress_object_construction',
                   'title', 'state_calculation')
 
 
@@ -146,6 +121,15 @@ class StructuralElementFrameSerializer(serializers.ModelSerializer):
 class FrameOpeningsSerializer(serializers.Serializer):
     frame = StructuralElementFrameSerializer()
     openings = OpeningsSerializer(many=True)
+
+
+class FrameSerializer(serializers.ModelSerializer):
+    openings = OpeningsSerializer(many=True)
+
+    class Meta:
+        model = StructuralElementFrame
+        exclude = ('calculations',)
+
 
 
 class StructuralElementFoundationSerializer(serializers.ModelSerializer):
@@ -202,3 +186,33 @@ class CalcUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Calculation
         fields = ('structural_element_foundation', 'structural_element_frame')
+
+
+class CalculationSerializer(serializers.ModelSerializer):
+    """Сериализатор для расчетов."""
+    results = ResultSerializer(many=True)
+    manager = serializers.SlugRelatedField(
+        slug_field='username',
+        read_only=True,
+        default=serializers.CurrentUserDefault()
+    )
+    customer = serializers.SlugRelatedField(
+        slug_field='pk',
+        queryset=Customers.objects.all(),
+        required=True,
+    )
+    state_calculation = serializers.SlugRelatedField(
+        slug_field='title',
+        queryset=Customers.objects.all(),
+        required=True,
+    )
+    structural_element_foundation = StructuralElementFoundationSerializer(
+        many=True)
+    structural_element_frame = FrameSerializer(many=True)
+
+    class Meta:
+        model = Calculation
+        fields = ('id', 'title', 'manager', 'customer',
+                  'adress_object_construction', 'created_date',
+                  'state_calculation', 'results',
+                  'structural_element_foundation', 'structural_element_frame')
