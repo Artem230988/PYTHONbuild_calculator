@@ -8,6 +8,11 @@ User = get_user_model()
 
 class CalculationCustomerSerializer(serializers.ModelSerializer):
     """Сериализатор для расчетов."""
+    state_calculation = serializers.SlugRelatedField(
+        slug_field='title',
+        queryset=CalculationState.objects.all(),
+        required=True,
+    )
 
     class Meta:
         model = Calculation

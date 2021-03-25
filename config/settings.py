@@ -5,10 +5,15 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECRET_KEY = '*9dwht^)&od&urxjy4-qw=16&+5_wj_^m$7p(son2^!k1ko8j)'
-# 
+#
 # DEBUG = True
-# 
-# ALLOWED_HOSTS = []
+#
+# ALLOWED_HOSTS = [
+#     "localhost",
+#     "127.0.0.1",
+#     "[::1]",
+#     "testserver",
+# ]
 
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
