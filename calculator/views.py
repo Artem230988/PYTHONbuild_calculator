@@ -91,10 +91,10 @@ class CalcPostViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
         return redirect('calculation_detail', pk=pk)
 
     def perform_create(self, serializer):
+        keys = serializer.validated_data.keys()
         calculation_data = serializer.validated_data['calculation']
         calculation = Calculation.objects.create(**calculation_data,
                                                  manager=self.request.user)
-        keys = serializer.validated_data.keys()
         if 'structural_element_foundation' in keys:
             foundation_data = serializer.validated_data[
                 'structural_element_foundation'

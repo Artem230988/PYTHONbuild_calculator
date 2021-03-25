@@ -117,6 +117,58 @@ class StructuralElementFrameSerializer(serializers.ModelSerializer):
         decimal_places=2,
         default=0.6
     )
+    external_wall_thickness = serializers.SlugRelatedField(
+        slug_field='width',
+        queryset=SpecificMaterial.objects.filter(
+            material__name='Доска',
+            thickness=50,
+            length=3000
+        )
+    )
+    internal_wall_thickness = serializers.SlugRelatedField(
+        slug_field='width',
+        queryset=SpecificMaterial.objects.filter(
+            material__name='Доска',
+            thickness=50,
+            length=3000
+        )
+    )
+    steam_waterproofing_external_walls = serializers.SlugRelatedField(
+        slug_field='name',
+        queryset=SpecificMaterial.objects.all()
+    )
+    steam_waterproofing_base_area = serializers.SlugRelatedField(
+        slug_field='name',
+        queryset=SpecificMaterial.objects.all()
+    )
+    windscreen_external_walls = serializers.SlugRelatedField(
+        slug_field='name',
+        queryset=SpecificMaterial.objects.all()
+    )
+    windscreen_base_area = serializers.SlugRelatedField(
+        slug_field='name',
+        queryset=SpecificMaterial.objects.all()
+    )
+    insulation_external_walls = serializers.SlugRelatedField(
+        slug_field='name',
+        queryset=SpecificMaterial.objects.all()
+    )
+    insulation_base_area = serializers.SlugRelatedField(
+        slug_field='name',
+        queryset=SpecificMaterial.objects.all()
+    )
+    OSB_for_interior_walls = serializers.SlugRelatedField(
+        slug_field='name',
+        queryset=SpecificMaterial.objects.all()
+    )
+    OSB_for_external_walls = serializers.SlugRelatedField(
+        slug_field='name',
+        queryset=SpecificMaterial.objects.all()
+    )
+    OSB_for_base_area = serializers.SlugRelatedField(
+        slug_field='name',
+        queryset=SpecificMaterial.objects.all()
+    )
 
     class Meta:
         model = StructuralElementFrame
