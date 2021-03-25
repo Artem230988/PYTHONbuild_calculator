@@ -188,9 +188,16 @@ class FrameSerializer(serializers.ModelSerializer):
         exclude = ('calculations',)
 
 
-
 class StructuralElementFoundationSerializer(serializers.ModelSerializer):
     """Сериализатор для фундамента"""
+    concrete_pile = serializers.SlugRelatedField(
+        slug_field='name',
+        queryset=SpecificMaterial.objects.all()
+    )
+    concrete = serializers.SlugRelatedField(
+        slug_field='name',
+        queryset=SpecificMaterial.objects.all()
+    )
 
     class Meta:
         model = StructuralElementFoundation
