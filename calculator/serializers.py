@@ -57,7 +57,8 @@ class SpecificMaterialSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SpecificMaterial
-        fields = ('id', 'material', 'measurement_unit', 'name')
+        fields = ('id', 'material', 'measurement_unit', 'name',
+                  'length', 'width', 'thickness')
 
 
 class ResultSerializer(serializers.ModelSerializer):
@@ -117,22 +118,6 @@ class StructuralElementFrameSerializer(serializers.ModelSerializer):
         decimal_places=2,
         default=0.6
     )
-    external_wall_thickness = serializers.SlugRelatedField(
-        slug_field='width',
-        queryset=SpecificMaterial.objects.filter(
-            material__name='Доска',
-            thickness=50,
-            length=3000
-        )
-    )
-    internal_wall_thickness = serializers.SlugRelatedField(
-        slug_field='width',
-        queryset=SpecificMaterial.objects.filter(
-            material__name='Доска',
-            thickness=50,
-            length=3000
-        )
-    )
     steam_waterproofing_external_walls = serializers.SlugRelatedField(
         slug_field='name',
         queryset=SpecificMaterial.objects.all()
@@ -174,6 +159,43 @@ class StructuralElementFrameSerializer(serializers.ModelSerializer):
         model = StructuralElementFrame
         exclude = ('calculations',)
 
+    def validate(self, attrs):
+        keys = attrs.keys()
+        if 'external_wall_thickness' in keys:
+            width = attrs['external_wall_thickness']
+            try:
+                queryset = SpecificMaterial.objects.get(
+                    material__name='Доска', width=width,
+                    thickness=50, length=3000
+                )
+            except ObjectDoesNotExist:
+                raise serializers.ValidationError(
+                    f'Доски для external_wall_thickness нет в базе - {width}'
+                )
+        if 'internal_wall_thickness' in keys:
+            width = attrs['internal_wall_thickness']
+            try:
+                queryset = SpecificMaterial.objects.get(
+                    material__name='Доска', width=width,
+                    thickness=50, length=3000
+                )
+            except ObjectDoesNotExist:
+                raise serializers.ValidationError(
+                    f'Доски для internal_wall_thickness нет в базе - {width}'
+                )
+        if 'overlap_thickness' in keys:
+            width = attrs['overlap_thickness']
+            try:
+                queryset = SpecificMaterial.objects.get(
+                    material__name='Доска', width=width,
+                    thickness=50, length=6000
+                )
+            except ObjectDoesNotExist:
+                raise serializers.ValidationError(
+                    f'Доски для overlap_thickness нет в базе - {width}'
+                )
+        return attrs
+
 
 class FrameOpeningsSerializer(serializers.Serializer):
     frame = StructuralElementFrameSerializer()
@@ -190,14 +212,6 @@ class FrameSerializer(serializers.ModelSerializer):
 
 class StructuralElementFoundationSerializer(serializers.ModelSerializer):
     """Сериализатор для фундамента"""
-    concrete_pile = serializers.SlugRelatedField(
-        slug_field='name',
-        queryset=SpecificMaterial.objects.all()
-    )
-    concrete = serializers.SlugRelatedField(
-        slug_field='name',
-        queryset=SpecificMaterial.objects.all()
-    )
 
     class Meta:
         model = StructuralElementFoundation
