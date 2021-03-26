@@ -190,24 +190,28 @@ class SpecificMaterial(models.Model):
     )
     length = models.DecimalField(
         verbose_name='Длина',
+        help_text='мм, если применимо к материалу',
         decimal_places=2,
         max_digits=10,
         blank=True, null=True
     )
     width = models.DecimalField(
         verbose_name='Ширина',
+        help_text='мм, если применимо к материалу',
         decimal_places=2,
         max_digits=10,
         blank=True, null=True
     )
     thickness = models.DecimalField(
         verbose_name='Толщина',
+        help_text='мм, если применимо к материалу',
         decimal_places=2,
         max_digits=10,
         blank=True, null=True
     )
     volume = models.DecimalField(
         verbose_name='Объем',
+        help_text='м3, если применимо к материалу',
         decimal_places=2,
         max_digits=10,
         blank=True, null=True
@@ -270,7 +274,7 @@ class StructuralElementFrame(models.Model):
     calculations = models.ForeignKey(
         'Calculation',
         verbose_name='Расчет',
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         related_name='structural_element_frame',
     )
     number_of_floors = models.IntegerField(
@@ -278,77 +282,94 @@ class StructuralElementFrame(models.Model):
     )
     perimeter_of_external_walls = models.DecimalField(
         verbose_name='Периметр внешних стен',
+        help_text='ед. измерения - метры (м)',
         decimal_places=2,
         max_digits=10
     )
     base_area = models.DecimalField(
         verbose_name='Площадь основания',
+        help_text='ед. измерения - метры кубические (м2)',
         decimal_places=2,
         max_digits=10
     )
     external_wall_thickness = models.DecimalField(
         verbose_name='Толщина внешних стен',
+        help_text='ед. измерения - миллиметры (мм)',
         decimal_places=2,
         max_digits=10
     )
     internal_wall_length = models.DecimalField(
         verbose_name='Длина внутренних стен',
+        help_text='ед. измерения - метры (м)',
         decimal_places=2,
         max_digits=10
     )
     internal_wall_thickness = models.DecimalField(
         verbose_name='Толщина внутренних стен',
+        help_text='ед. измерения - миллиметры (мм)',
         decimal_places=2,
         max_digits=10
     )
     height_of_one_floor = models.DecimalField(
         verbose_name='Высота одного этажа',
+        help_text='ед. измерения - метры (м)',
         decimal_places=2,
         max_digits=10
     )
     overlap_thickness = models.DecimalField(
         verbose_name='Толщина перекрытия',
+        help_text='ед. измерения - миллиметры (мм)',
         decimal_places=2,
         max_digits=10
     )
     steam_waterproofing_external_walls = models.CharField(
         verbose_name='Парогидроизоляция',
-        max_length=30,
+        help_text='Название материала',
+        max_length=50,
     )
     steam_waterproofing_base_area = models.CharField(
         verbose_name='Парогидроизоляция',
-        max_length=30,
+        help_text='Название материала',
+        max_length=50,
     )
     windscreen_external_walls = models.CharField(
         verbose_name='Ветрозащита',
-        max_length=30,
+        help_text='Название материала',
+        max_length=50,
     )
     windscreen_base_area = models.CharField(
         verbose_name='Ветрозащита',
-        max_length=30,
+        help_text='Название материала',
+        max_length=50,
     )
     insulation_external_walls = models.CharField(
         verbose_name='Утеплитель',
-        max_length=30,
+        help_text='Название материала',
+        max_length=50,
     )
     insulation_base_area = models.CharField(
         verbose_name='Утеплитель',
-        max_length=30,
+        help_text='Название материала',
+        max_length=50,
     )
     OSB_for_interior_walls = models.CharField(
         verbose_name='ОСБ для внутренних стен',
-        max_length=30,
+        help_text='Название материала',
+        max_length=50,
     )
     OSB_for_external_walls = models.CharField(
         verbose_name='ОСБ для наружных стен',
-        max_length=30,
+        help_text='Название материала',
+        max_length=50,
     )
     OSB_for_base_area = models.CharField(
         verbose_name='ОСБ для потолка и пола',
-        max_length=30,
+        help_text='Название материала',
+        max_length=50,
     )
     step_of_racks = models.DecimalField(
         verbose_name='Шаг стоек',
+        help_text='ед. измерения - метры (м)',
         decimal_places=2,
         max_digits=10
     )
@@ -363,12 +384,12 @@ class FrameOpening(models.Model):
     frame = models.ForeignKey(
         StructuralElementFrame,
         verbose_name='каркас',
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
     )
     opening = models.ForeignKey(
         'Opening',
         verbose_name='проем',
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
     )
 
 
@@ -377,20 +398,24 @@ class Opening(models.Model):
     frame = models.ForeignKey(
         StructuralElementFrame,
         verbose_name='каркас',
-        on_delete=models.PROTECT,
-        related_name='frame',
+        on_delete=models.CASCADE,
+        related_name='openings',
     )
     type = models.CharField(
         max_length=50,
+        help_text=('Дверные проемы внутренние, Дверные проемы внешние '
+                   'или Оконные проемы'),
         verbose_name='Тип проема'
     )
     wigth = models.DecimalField(
         verbose_name='Ширина',
+        help_text='ед. измерения - метры (м)',
         decimal_places=2,
         max_digits=10
     )
     height = models.DecimalField(
         verbose_name='Высота',
+        help_text='ед. измерения - метры (м)',
         decimal_places=2,
         max_digits=10
     )
@@ -403,4 +428,36 @@ class Opening(models.Model):
         verbose_name_plural = 'Проемы'
 
     def __str__(self):
-        return f'{self.type} Ш{self.height}В{self.height} кол-во{self.count}'
+        return f'{self.type} Ш{self.height}*В{self.height} кол-во {self.count}'
+
+
+class StructuralElementFoundation(models.Model):
+    """Конструктивный элемент фундамент."""
+    calculation = models.ForeignKey(
+        'Calculation',
+        verbose_name='Расчет',
+        on_delete=models.CASCADE,
+        related_name='structural_element_foundation',
+    )
+    perimeter_of_external_walls = models.DecimalField(
+        verbose_name='Периметр внешних стен',
+        decimal_places=2,
+        max_digits=10
+    )
+    internal_wall_length = models.DecimalField(
+        verbose_name='Длина внутренних стен',
+        decimal_places=2,
+        max_digits=10
+    )
+    concrete_pile = models.CharField(
+        verbose_name='Бетонная свая',
+        max_length=100
+    )
+    concrete = models.CharField(
+        verbose_name='Бетон',
+        max_length=100
+    )
+
+    class Meta:
+        verbose_name = 'Конструктивный элемент фундамент'
+        verbose_name_plural = 'Конструктивный элемент фундамент'
