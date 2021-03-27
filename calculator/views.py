@@ -118,7 +118,14 @@ class CalcPostViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
                 frames = StructuralElementFrame.objects.latest('pk')
                 for opening in openings:
                     opening = OpeningsSerializer(data=opening)
+                    type = opening.initial_data['type']
                     opening.is_valid()
+                    if len(opening.validated_data.keys()) == 0:
+                        calculation.delete()
+                        raise serializers.ValidationError(
+                            f'Данные для {type} не корректны '
+                            f'на этаже {frames.number_of_floors}'
+                        )
                     opening.save(frame=frames)
                 calculate_frame(frames)
         return calculation.id
